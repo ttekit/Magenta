@@ -7,6 +7,11 @@
         mc:Ignorable="d"
         Title="M.A.G.E.N.T.A" Height="450" Width="800">
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Button x:Name="StartButton" Click="StartButton_OnClick">Start Recording</Button>
+        <Button Grid.Row="1" x:Name="StopButton" Click="StopButton_OnClick">Stop Recording</Button>
     </Grid>
 </Window>

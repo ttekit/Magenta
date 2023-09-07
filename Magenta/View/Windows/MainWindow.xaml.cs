@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Magenta.Core.Audio;
 
 namespace Magenta
 {
@@ -20,9 +21,23 @@ namespace Magenta
     /// </summary>
     public partial class MainWindow : Window
     {
+        private AudioRecorder _recorder;
         public MainWindow()
         {
             InitializeComponent();
+            _recorder = new AudioRecorder();
+        }
+
+ 
+
+        private void StopButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            _recorder.StopRecording();
+        }
+
+        private void StartButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            _recorder.StartRecording();
         }
     }
 }
