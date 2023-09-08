@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Windows;
 using NAudio.Lame;
 using NAudio.Wave;
@@ -17,7 +16,7 @@ public class AudioRecorder
 
     public void StartRecording()
     {
-        isRecording = false;
+        if(isRecording) return;
         silenceTimer = new Stopwatch();
         waveSource = new WaveInEvent();
         waveSource.WaveFormat =
@@ -34,18 +33,18 @@ public class AudioRecorder
     private void WaveSource_DataAvailable(object sender, WaveInEventArgs e)
     {
         float rms = CalculateRMS(e.Buffer, e.BytesRecorded);
-
+        Trace.WriteLine(rms);
         if (rms > Config.Instance.SILENCE_THRESHOLD && !isRecording)
         {
             isRecording = true;
             silenceTimer.Start();
         }
+
         if (isRecording)
         {
             waveFileWriter.Write(e.Buffer, 0, e.BytesRecorded);
             if (rms < Config.Instance.SILENCE_THRESHOLD)
             {
-
                 if (silenceTimer.ElapsedMilliseconds >= Config.Instance.SILENCE_DURATION_MS)
                 {
                     silenceTimer.Stop();
@@ -58,17 +57,19 @@ public class AudioRecorder
                 silenceTimer.Restart();
             }
         }
-
     }
 
     public void StopRecording()
     {
         waveSource.StopRecording();
+        
         MessageBox.Show("Recording ended");
     }
 
     private void WaveSource_RecordingStopped(object sender, StoppedEventArgs e)
     {
+        if(isRecording)
+        isRecording = false;
         waveFileWriter.Close();
         waveFileWriter.Dispose();
 
@@ -82,6 +83,7 @@ public class AudioRecorder
             mp3Writer.Close();
             mp3Writer.Dispose();
         }
+
     }
 
     private float CalculateRMS(byte[] buffer, int bytesRead)
