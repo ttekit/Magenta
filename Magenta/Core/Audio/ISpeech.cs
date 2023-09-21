@@ -1,5 +1,3 @@
-using System.IO;
-
 namespace Magenta.Core.Audio;
 
 public interface ISpeech
@@ -9,6 +7,6 @@ public interface ISpeech
     string Recognition(string recordPath);
 
     string Analize(string text);
-    
+
     string Simplify(string text);
 }

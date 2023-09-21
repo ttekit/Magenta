@@ -1,3 +1,5 @@
+using System;
+
 namespace Magenta.Core.Audio;
 
 public class Speech : ISpeech
@@ -14,11 +16,11 @@ public class Speech : ISpeech
 
     public string Analize(string text)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public string Simplify(string text)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 }

@@ -5,6 +5,9 @@ namespace Magenta.Core;
 public class Config
 {
     private static Config _config;
+    public int SILENCE_DURATION_MS = 1000;
+
+    public float SILENCE_THRESHOLD = 0.01f;
 
     private Config()
     {
@@ -22,13 +25,12 @@ public class Config
 
     //FILES
     public string RootPath => @"E:\Magenta\Magenta\";
+    public string ApiKeysPath => @"C:\Users\tekit\keys\c#\";
     public string TempFilesPath => RootPath + @"temp\";
+
+    public string HistoryDir => RootPath + @"history\";
 
     // MICRO
     public int SAMPLE_RATE => 44100;
     public int CHANNELS => 1;
-
-    public float SILENCE_THRESHOLD = 0.01f;
-    public int SILENCE_DURATION_MS = 1000;
-    
 }

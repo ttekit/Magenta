@@ -8,30 +8,33 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Core\ViewCore\" />
-      <Folder Include="DataBase\" />
+        <Folder Include="Core\ViewCore\" />
+        <Folder Include="DataBase\" />
     </ItemGroup>
 
     <ItemGroup>
-      <Page Update="View\Windows\MainWindow.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
+        <Page Update="View\Windows\MainWindow.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
     </ItemGroup>
 
     <ItemGroup>
-      <ApplicationDefinition Include="View\Windows\App.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </ApplicationDefinition>
+        <ApplicationDefinition Include="View\Windows\App.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </ApplicationDefinition>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Deepgram" Version="3.2.0" />
-      <PackageReference Include="NAudio" Version="2.2.1" />
-      <PackageReference Include="NAudio.Lame" Version="2.1.0" />
+        <PackageReference Include="Deepgram" Version="3.2.0" />
+        <PackageReference Include="NAudio" Version="2.2.1" />
+        <PackageReference Include="NAudio.Lame" Version="2.1.0" />
+        <PackageReference Include="Porcupine" Version="2.2.3" />
+        <PackageReference Include="PvRecorder" Version="1.2.4" />
+        <PackageReference Include="System.Speech" Version="7.0.0" />
     </ItemGroup>
 
 </Project>

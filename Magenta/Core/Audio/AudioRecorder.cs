@@ -8,15 +8,15 @@ namespace Magenta.Core.Audio;
 
 public class AudioRecorder
 {
-    private WaveInEvent waveSource;
-    private WaveFileWriter waveFileWriter;
-    private LameMP3FileWriter mp3Writer;
     private bool isRecording;
+    private LameMP3FileWriter mp3Writer;
     private Stopwatch silenceTimer;
+    private WaveFileWriter waveFileWriter;
+    private WaveInEvent waveSource;
 
     public void StartRecording()
     {
-        if(isRecording) return;
+        if (isRecording) return;
         silenceTimer = new Stopwatch();
         waveSource = new WaveInEvent();
         waveSource.WaveFormat =
@@ -32,7 +32,7 @@ public class AudioRecorder
 
     private void WaveSource_DataAvailable(object sender, WaveInEventArgs e)
     {
-        float rms = CalculateRMS(e.Buffer, e.BytesRecorded);
+        var rms = CalculateRMS(e.Buffer, e.BytesRecorded);
         Trace.WriteLine(rms);
         if (rms > Config.Instance.SILENCE_THRESHOLD && !isRecording)
         {
@@ -62,14 +62,14 @@ public class AudioRecorder
     public void StopRecording()
     {
         waveSource.StopRecording();
-        
+
         MessageBox.Show("Recording ended");
     }
 
     private void WaveSource_RecordingStopped(object sender, StoppedEventArgs e)
     {
-        if(isRecording)
-        isRecording = false;
+        if (isRecording)
+            isRecording = false;
         waveFileWriter.Close();
         waveFileWriter.Dispose();
 
@@ -83,21 +83,20 @@ public class AudioRecorder
             mp3Writer.Close();
             mp3Writer.Dispose();
         }
-
     }
 
     private float CalculateRMS(byte[] buffer, int bytesRead)
     {
-        float sumOfSquares = 0.0f;
+        var sumOfSquares = 0.0f;
 
-        for (int i = 0; i < bytesRead; i += 2)
+        for (var i = 0; i < bytesRead; i += 2)
         {
-            short sample = BitConverter.ToInt16(buffer, i);
-            float sampleValue = sample / 327.680f;
+            var sample = BitConverter.ToInt16(buffer, i);
+            var sampleValue = sample / 327.680f;
             sumOfSquares += sampleValue * sampleValue;
         }
 
-        float rms = (float)Math.Sqrt(sumOfSquares / (bytesRead / 2));
+        var rms = (float)Math.Sqrt(sumOfSquares / (bytesRead / 2));
 
         return rms;
     }

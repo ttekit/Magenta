@@ -1,43 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using Magenta.Core;
 using Magenta.Core.Audio;
+using Pv;
 
-namespace Magenta
+namespace Magenta;
+
+/// <summary>
+///     Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+
+
+    Porcupine porcupine;
+    private short[] audioFrame;
+    
+    private readonly AudioRecorder _recorder;
+
+    public MainWindow()
     {
-        private AudioRecorder _recorder;
-        public MainWindow()
-        {
-            InitializeComponent();
-            _recorder = new AudioRecorder();
-        }
+        InitializeComponent();
+    }
 
- 
+    private void StartButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        _recorder.StartRecording();
+    }
 
-        private void StopButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            _recorder.StopRecording();
-        }
-
-        private void StartButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            _recorder.StartRecording();
-        }
+    private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        Start.StartListening();
     }
 }
