@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 using Magenta.Core;
 using Magenta.Core.Audio;
 using Pv;
@@ -6,29 +8,32 @@ using Pv;
 namespace Magenta;
 
 /// <summary>
-///     Interaction logic for MainWindow.xaml
+///     Interaction magical logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window
 {
-
-
-    Porcupine porcupine;
-    private short[] audioFrame;
-    
-    private readonly AudioRecorder _recorder;
+    private Start _start;
 
     public MainWindow()
     {
         InitializeComponent();
-    }
-
-    private void StartButton_OnClick(object sender, RoutedEventArgs e)
-    {
-        _recorder.StartRecording();
+        _start = new Start();
     }
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        Start.StartListening();
+        _start.StartListening();
+
+
+        _start.Speech.Recognizer.RecognitionEndedEvent += () =>
+        {
+            Task.Run(() =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    RecResulTextBlock.Text = _start.Speech.Recognizer.Result;
+                });
+            });
+        };
     }
 }

@@ -13,10 +13,15 @@ public class AudioRecorder
     private Stopwatch silenceTimer;
     private WaveFileWriter waveFileWriter;
     private WaveInEvent waveSource;
+    public bool isEnded => isRecording;
+
+    public event RecordStartedEvent recordStarted;
+    public event RecordEndedEvent recordEnded;
 
     public void StartRecording()
     {
         if (isRecording) return;
+        Trace.WriteLine("Recording started");
         silenceTimer = new Stopwatch();
         waveSource = new WaveInEvent();
         waveSource.WaveFormat =
@@ -27,6 +32,7 @@ public class AudioRecorder
         waveSource.DataAvailable += WaveSource_DataAvailable;
         waveSource.RecordingStopped += WaveSource_RecordingStopped;
 
+
         waveSource.StartRecording();
     }
 
@@ -36,7 +42,9 @@ public class AudioRecorder
         Trace.WriteLine(rms);
         if (rms > Config.Instance.SILENCE_THRESHOLD && !isRecording)
         {
+            Trace.WriteLine("Voice Detected");
             isRecording = true;
+            recordStarted?.Invoke();
             silenceTimer.Start();
         }
 
@@ -48,7 +56,7 @@ public class AudioRecorder
                 if (silenceTimer.ElapsedMilliseconds >= Config.Instance.SILENCE_DURATION_MS)
                 {
                     silenceTimer.Stop();
-
+                    Trace.WriteLine("Silence Detected");
                     StopRecording();
                 }
             }
@@ -62,8 +70,6 @@ public class AudioRecorder
     public void StopRecording()
     {
         waveSource.StopRecording();
-
-        MessageBox.Show("Recording ended");
     }
 
     private void WaveSource_RecordingStopped(object sender, StoppedEventArgs e)
@@ -72,7 +78,7 @@ public class AudioRecorder
             isRecording = false;
         waveFileWriter.Close();
         waveFileWriter.Dispose();
-
+        Trace.WriteLine("RECORDING ENDED");
         using (var reader = new WaveFileReader(Config.Instance.TempFilesPath + "output.wav"))
         {
             mp3Writer = new LameMP3FileWriter(Config.Instance.TempFilesPath + "output.mp3", reader.WaveFormat,
@@ -83,6 +89,8 @@ public class AudioRecorder
             mp3Writer.Close();
             mp3Writer.Dispose();
         }
+        Trace.WriteLine("RECORDING WRITE TO FILE ENDED");
+        recordEnded?.Invoke();
     }
 
     private float CalculateRMS(byte[] buffer, int bytesRead)
@@ -100,4 +108,8 @@ public class AudioRecorder
 
         return rms;
     }
+
+    public delegate void RecordEndedEvent();
+
+    public delegate void RecordStartedEvent();
 }

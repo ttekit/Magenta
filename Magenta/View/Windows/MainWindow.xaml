@@ -11,8 +11,8 @@
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Button x:Name="StartButton" Click="StartButton_OnClick">Start Recording</Button>
-        <WrapPanel Grid.Row="1">
+        <WrapPanel Grid.Row="0" HorizontalAlignment="Center">
+            <TextBlock x:Name="RecResulTextBlock" FontSize="25">test</TextBlock>
         </WrapPanel>
     </Grid>
 </Window>

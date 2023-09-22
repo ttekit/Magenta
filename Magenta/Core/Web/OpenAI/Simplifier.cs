@@ -9,6 +9,7 @@ public class Simplifier
     private const string LINK = "https://api.openai.com/v1/completions";
     private readonly string _apiKey;
     private readonly WebRequests _webRequest;
+    public string Result { get; private set; }
 
     public Simplifier()
     {
@@ -29,6 +30,7 @@ public class Simplifier
         data["prompt"] = text;
         data["max_tokens"] = 1200;
         data["temperature"] = 0f;
-        return _webRequest.execute(data);
+        Result = _webRequest.execute(data);
+        return Result;
     }
 }
