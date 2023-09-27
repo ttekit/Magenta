@@ -11,26 +11,30 @@ public class Speech : ISpeech
     private AudioRecorder _recorder;
     private AudioRecognizer _recognizer;
     private Simplifier _simplifier;
+    private TextDubber _dubber;
 
     public AudioRecorder Recorder => _recorder;
 
     public AudioRecognizer Recognizer => _recognizer;
 
     public Simplifier Simplifier => _simplifier;
+    public TextDubber Dubber => _dubber;
 
     public Speech()
     {
         _recorder = new AudioRecorder();
-        _recorder.recordEnded += RecorderOnRecordEnded;
         _recognizer = new AudioRecognizer();
         _simplifier = new Simplifier();
+        _dubber = new TextDubber();
+
+        _recorder.recordEnded += RecorderOnRecordEnded;
     }
+
 
     private void RecorderOnRecordEnded()
     {
         Recognition(Config.Instance.TempFilesPath + "output.wav");
     }
-
 
     public void Record()
     {
@@ -50,6 +54,11 @@ public class Speech : ISpeech
     public string Simplify(string text)
     {
         return _simplifier.Simplify(text);
+    }
+
+    public void Announce(string text)
+    {
+        _dubber.Announce(text);
     }
 
     public string GetRecognitionResult => _recognizer.Result;

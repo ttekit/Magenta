@@ -7,13 +7,15 @@ namespace Magenta.Core.Web;
 
 public class ChatGpt
 {
+    private readonly string settings =
+        "Ответь в стиле jarvis к особе мужского пола: ";
+
     private readonly string apiKey;
     private readonly string historyFileName;
     private readonly JArray messages;
 
-    private readonly string settings =
-        "Ответь в стиле jarvis к особе мужского пола: ";
-
+    public string? Result { get; private set; }
+    public event ResultsWereObtainedEvent resultsObtained;
 
     public ChatGpt()
     {
@@ -33,8 +35,7 @@ public class ChatGpt
         }
     }
 
-    [Obsolete("Obsolete")]
-    public string SendMessage(string text)
+    public string? SendMessage(string text)
     {
         text += ".";
         var message = new JObject();
@@ -51,12 +52,17 @@ public class ChatGpt
         var data = new JObject();
         data["model"] = "gpt-3.5-turbo";
         data["messages"] = messages;
+       
         var requests = new WebRequests("", httpWebRequest);
         var response = requests.execute(data);
         var content = JObject.Parse(response)["choices"]?[0]?["message"]?["content"]?.ToString();
         messages.Add(JObject.Parse(response)["choices"]?[0]?["message"] ?? throw new InvalidOperationException());
+        
         SaveToFile();
-        return content;
+        Result = content;
+        resultsObtained?.Invoke();
+        
+        return Result;
     }
 
 
@@ -80,3 +86,5 @@ public class ChatGpt
         }
     }
 }
+
+public delegate void ResultsWereObtainedEvent();

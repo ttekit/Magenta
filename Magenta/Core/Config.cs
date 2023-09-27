@@ -25,11 +25,14 @@ public class Config
 
     //FILES
     public string RootPath => @"E:\Magenta\Magenta\";
-    public string ApiKeysPath => @"C:\Users\tekit\keys\c#\";
+    public string ApiKeysPath => @"C:\Users\tekit\zzzkeys\c#\";
     public string TempFilesPath => RootPath + @"temp\";
 
     public string HistoryDir => RootPath + @"history\";
+    public string AudioDir => RootPath + @"audio\";
 
+    public string RECORD_START_SOUND_URI => AudioDir+"bipStart.mp3";
+    public string RECORD_END_SOUND_URI => AudioDir+"bipEnd.mp3";
     // MICRO
     public int SAMPLE_RATE => 44100;
     public int CHANNELS => 1;

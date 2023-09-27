@@ -17,6 +17,7 @@ public class AudioRecorder
 
     public event RecordStartedEvent recordStarted;
     public event RecordEndedEvent recordEnded;
+    public event RecordEndStartedEvent recordEndStarted;
 
     public void StartRecording()
     {
@@ -76,6 +77,7 @@ public class AudioRecorder
     {
         if (isRecording)
             isRecording = false;
+        recordEndStarted?.Invoke();
         waveFileWriter.Close();
         waveFileWriter.Dispose();
         Trace.WriteLine("RECORDING ENDED");
@@ -110,6 +112,8 @@ public class AudioRecorder
     }
 
     public delegate void RecordEndedEvent();
-
     public delegate void RecordStartedEvent();
+    public delegate void RecordEndStartedEvent();
+
 }
+

@@ -12,7 +12,10 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <WrapPanel Grid.Row="0" HorizontalAlignment="Center">
-            <TextBlock x:Name="RecResulTextBlock" FontSize="25">test</TextBlock>
+            <TextBlock x:Name="RecResulTextBlock" FontSize="25">Your question</TextBlock>
+        </WrapPanel>       
+        <WrapPanel Grid.Row="1" HorizontalAlignment="Center">
+            <TextBlock x:Name="ResponseTextBlock" FontSize="25">Responce</TextBlock>
         </WrapPanel>
     </Grid>
 </Window>
