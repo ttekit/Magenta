@@ -6,6 +6,7 @@ public class Config
 {
     private static Config _config;
     public int SILENCE_DURATION_MS = 1000;
+    public int STOP_DURATION_MS = 3000;
 
     public float SILENCE_THRESHOLD = 0.01f;
 

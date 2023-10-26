@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Deepgram;
 using Deepgram.Models;
+using Google.Cloud.Speech.V1;
 
 namespace Magenta.Core.Audio;
 
@@ -35,11 +36,45 @@ public class AudioRecognizer
                 }
             );
             Trace.WriteLine("RECOGNIZE ENDED");
-            Result = response.ToSRT();
-            Trace.WriteLine("RESPONSE: " + response.ToSRT());
+            Trace.Write("RESPONSE: ");
+            string[] temp = response.ToSRT().Split(" - ");
+            for (int i = 1; i < temp.Length; i++)
+            {
+                Console.WriteLine(temp);
+                Result += temp[i];
+            }
+
             RecognitionEndedEvent?.Invoke();
-            return response.ToSRT();
+            return Result;
         }
+    }
+
+    public string RecognizeVersionTwo(string audioFilePath)
+    {
+        var speech = SpeechClient.Create();
+        string res = "";
+        var config = new RecognitionConfig
+        {
+            Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+            SampleRateHertz = 44100,
+            LanguageCode = LanguageCodes.Russian.Russia
+        };
+        var audio = RecognitionAudio.FromFile(audioFilePath);
+
+        var response = speech.Recognize(config, audio);
+
+        foreach (var result in response.Results)
+        {
+            foreach (var alternative in result.Alternatives)
+            {
+                res = alternative.Transcript;
+            }
+        }
+
+        Result = res;
+        RecognitionEndedEvent?.Invoke();
+        File.Delete(audioFilePath);
+        return res;
     }
 }
 

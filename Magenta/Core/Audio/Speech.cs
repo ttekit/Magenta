@@ -14,9 +14,7 @@ public class Speech : ISpeech
     private TextDubber _dubber;
 
     public AudioRecorder Recorder => _recorder;
-
     public AudioRecognizer Recognizer => _recognizer;
-
     public Simplifier Simplifier => _simplifier;
     public TextDubber Dubber => _dubber;
 
@@ -43,7 +41,7 @@ public class Speech : ISpeech
 
     public string Recognition(string recordPath)
     {
-        return _recognizer.Recognize(recordPath).Result;
+        return _recognizer.RecognizeVersionTwo(recordPath);
     }
 
     public string Analize(string text)

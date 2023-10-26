@@ -18,16 +18,19 @@ public class WebRequests
 
     public string execute(JObject data)
     {
-        using (var stream = new StreamWriter(_request.GetRequestStream()))
+        using (var requestStream = new StreamWriter(_request.GetRequestStream()))
         {
-            stream.Write(data.ToString());
+            requestStream.Write(data.ToString());
         }
 
-        var response = (HttpWebResponse)_request.GetResponse();
-
-        var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-
-        Trace.WriteLine(responseString);
-        return responseString;
+        using (var response = (HttpWebResponse)_request.GetResponse())
+        {
+            using (var responseStream = new StreamReader(response.GetResponseStream()))
+            {
+                var responseString = responseStream.ReadToEnd();
+                Trace.WriteLine(responseString);
+                return responseString;
+            }
+        }
     }
 }

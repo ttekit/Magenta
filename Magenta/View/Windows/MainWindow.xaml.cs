@@ -6,28 +6,27 @@ using System.Windows.Threading;
 using Magenta.Core;
 using Magenta.Core.Audio;
 using Magenta.Core.Web;
-using Microsoft.VisualBasic.Devices;
 
 namespace Magenta;
 
 public partial class MainWindow : Window
 {
-    private Start _start;
-    private ChatGpt _gpt;
-    private MediaPlayer _mediaPlayer;
+    private MainApplication _mainApplication;
+    private static MediaPlayer _mediaPlayer;
+    public static MediaPlayer MediaPlayer => _mediaPlayer;
 
     public MainWindow()
     {
         InitializeComponent();
-        _start = new Start();
-        _gpt = new ChatGpt();
         _mediaPlayer = new MediaPlayer();
+        _mainApplication = new MainApplication();
     }
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        _start.StartListening();
-        _start.WakeWordDetector.MagentaDetected += () =>
+        _mainApplication.StartListening();
+
+        _mainApplication.WakeWordDetector.MagentaDetected += () =>
         {
             Task.Run(() =>
             {
@@ -37,8 +36,19 @@ public partial class MainWindow : Window
                     _mediaPlayer.Play();
                 });
             });
-        };        
-        _start.Speech.Recorder.recordEndStarted += () =>
+        };
+        _mainApplication.WakeWordDetector.ShutUpDetected += () =>
+        {
+            Task.Run(() =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    _mediaPlayer.Stop();
+                    _mediaPlayer.Close();
+                });
+            });
+        };
+        _mainApplication.Speech.Recorder.recordEndStarted += () =>
         {
             Task.Run(() =>
             {
@@ -49,18 +59,18 @@ public partial class MainWindow : Window
                 });
             });
         };
-        _start.Speech.Recognizer.RecognitionEndedEvent += () =>
+        _mainApplication.Speech.Recognizer.RecognitionEndedEvent += () =>
         {
             Task.Run(() =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    RecResulTextBlock.Text = _start.Speech.Recognizer.Result;
-                    ResponseTextBlock.Text = _start.Gpt.Result;
+                    RecResulTextBlock.Text = _mainApplication.Speech.Recognizer.Result;
+                    ResponseTextBlock.Text = _mainApplication.Gpt.Result;
                 });
             });
         };
-        _start.Speech.Dubber.AnnounceEnded += () =>
+        _mainApplication.Speech.Dubber.AnnounceEnded += () =>
         {
             Task.Run(() =>
             {

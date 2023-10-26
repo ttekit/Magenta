@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using Google.Cloud.TextToSpeech.V1;
 
 namespace Magenta.Core.Audio;
@@ -7,9 +8,14 @@ namespace Magenta.Core.Audio;
 public class TextDubber
 {
     public event AnnounceEndedEvent AnnounceEnded;
-    public static readonly string AudioFilePath = Config.Instance.TempFilesPath + "textAnnounce.wav"; 
+    public event AnnounceStartedEvent AnnounceStarted;
+
+    public static readonly string AudioFilePath = Config.Instance.TempFilesPath + "textAnnounce.wav";
+
     public void Announce(string textToSpeak)
     {
+        AnnounceStarted?.Invoke();
+
         string jsonKeyFilePath = Config.Instance.ApiKeysPath + "google.json";
         var clientBuilder = new TextToSpeechClientBuilder
         {
@@ -37,11 +43,24 @@ public class TextDubber
         };
 
         var response = client.SynthesizeSpeech(input);
+        while (true)
+        {
+            try
+            {
+                File.WriteAllBytes(AudioFilePath, response.AudioContent.ToByteArray());
+                break;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Thread.Sleep(100);
+            }
+        }
 
-        File.WriteAllBytes(AudioFilePath, response.AudioContent.ToByteArray());
         AnnounceEnded?.Invoke();
-        
     }
 }
+
+public delegate void AnnounceStartedEvent();
 
 public delegate void AnnounceEndedEvent();
