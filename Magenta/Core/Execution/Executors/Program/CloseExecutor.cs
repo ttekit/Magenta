@@ -13,28 +13,22 @@ public class CloseExecutor : IExecutor
     public string Execute()
     {
         Trace.WriteLine("Enter data: " + Command);
-        CommandTable commandTable = new CommandTable();
-        Command closeFilePath = commandTable.SelectCommandByName(Command.Trim());
+        var commandTable = new CommandTable();
+        var closeFilePath = commandTable.SelectCommandByName(Command.Trim());
 
         string[] split;
         if (closeFilePath.CommandText != null)
-        {
             split = closeFilePath.CommandText.Split('/');
-        }
         else
-        {
             split = Command.Split('/');
-        }
 
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < split.Length; i++)
-        {
+        var stringBuilder = new StringBuilder();
+        for (var i = 0; i < split.Length; i++)
             if (split.Length - i < 3)
             {
                 stringBuilder.Append(split[i]);
                 stringBuilder.Append(" ");
             }
-        }
 
         Trace.WriteLine("SB: " + stringBuilder);
         Command = stringBuilder.ToString().Trim();
@@ -42,7 +36,7 @@ public class CloseExecutor : IExecutor
 
         try
         {
-            Process process = new Process
+            var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -59,7 +53,7 @@ public class CloseExecutor : IExecutor
 
             while ((line = process.StandardOutput.ReadLine()) != null)
             {
-                string[] columns = line.Split(',');
+                var columns = line.Split(',');
                 if (columns[0].ToLower().Contains(Command))
                 {
                     Process.Start("taskkill", "/F /IM " + columns[0]);

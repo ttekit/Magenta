@@ -7,16 +7,15 @@ namespace Magenta.Core.Audio;
 
 public class TextDubber
 {
+    public static readonly string AudioFilePath = Config.Instance.TempFilesPath + "textAnnounce.wav";
     public event AnnounceEndedEvent AnnounceEnded;
     public event AnnounceStartedEvent AnnounceStarted;
-
-    public static readonly string AudioFilePath = Config.Instance.TempFilesPath + "textAnnounce.wav";
 
     public void Announce(string textToSpeak)
     {
         AnnounceStarted?.Invoke();
 
-        string jsonKeyFilePath = Config.Instance.ApiKeysPath + "google.json";
+        var jsonKeyFilePath = Config.Instance.ApiKeysPath + "google.json";
         var clientBuilder = new TextToSpeechClientBuilder
         {
             JsonCredentials = File.ReadAllText(jsonKeyFilePath)
@@ -33,7 +32,7 @@ public class TextDubber
             Voice = new VoiceSelectionParams
             {
                 LanguageCode = "ru-RU",
-                Name = "ru-RU-Standard-D",
+                Name = "ru-RU-Standard-D"
             },
             AudioConfig = new AudioConfig
             {
@@ -44,7 +43,6 @@ public class TextDubber
 
         var response = client.SynthesizeSpeech(input);
         while (true)
-        {
             try
             {
                 File.WriteAllBytes(AudioFilePath, response.AudioContent.ToByteArray());
@@ -55,7 +53,6 @@ public class TextDubber
                 Console.WriteLine(e);
                 Thread.Sleep(100);
             }
-        }
 
         AnnounceEnded?.Invoke();
     }

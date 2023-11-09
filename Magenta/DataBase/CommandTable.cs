@@ -8,15 +8,15 @@ namespace Magenta.Core.Execution.DataBase;
 public class CommandTable
 {
     private readonly string connectionUrl = "Data Source=D:/sqllite/db/";
-    private String fileName = "jarvis.db";
+    private string fileName = "jarvis.db";
 
     public void CreateDatabase(string fileName)
     {
-        string url = "Data Source=D:/sqllite/db/" + fileName;
+        var url = "Data Source=D:/sqllite/db/" + fileName;
 
         try
         {
-            using (SQLiteConnection conn = new SQLiteConnection(url))
+            using (var conn = new SQLiteConnection(url))
             {
                 conn.Open();
                 Trace.WriteLine("The driver name is " + conn.ServerVersion);
@@ -32,17 +32,17 @@ public class CommandTable
 
     public void CreateTables()
     {
-        using (SQLiteConnection connection = new SQLiteConnection(connectionUrl))
+        using (var connection = new SQLiteConnection(connectionUrl))
         {
             connection.Open();
             Trace.WriteLine("Connected to database successfully.");
 
-            using (SQLiteCommand cmd = new SQLiteCommand(connection))
+            using (var cmd = new SQLiteCommand(connection))
             {
-                string sql = "CREATE TABLE IF NOT EXISTS COMMANDS " +
-                             "(ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                             " NAME TEXT NOT NULL, " +
-                             " COMMAND TEXT NOT NULL)";
+                var sql = "CREATE TABLE IF NOT EXISTS COMMANDS " +
+                          "(ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                          " NAME TEXT NOT NULL, " +
+                          " COMMAND TEXT NOT NULL)";
                 cmd.CommandText = sql;
                 cmd.ExecuteNonQuery();
             }
@@ -51,14 +51,14 @@ public class CommandTable
 
     public void FillData(Command command)
     {
-        using (SQLiteConnection connection = new SQLiteConnection(connectionUrl))
+        using (var connection = new SQLiteConnection(connectionUrl))
         {
             connection.Open();
             Trace.WriteLine("Connected to database successfully.");
 
-            using (SQLiteCommand cmd = new SQLiteCommand(connection))
+            using (var cmd = new SQLiteCommand(connection))
             {
-                string sql = "INSERT INTO COMMANDS (NAME, COMMAND) VALUES (@Name, @Command)";
+                var sql = "INSERT INTO COMMANDS (NAME, COMMAND) VALUES (@Name, @Command)";
                 cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@Name", command.Name);
                 cmd.Parameters.AddWithValue("@Command", command.CommandText);
@@ -69,24 +69,24 @@ public class CommandTable
 
     public List<Command> SelectAllData()
     {
-        using (SQLiteConnection connection = new SQLiteConnection(connectionUrl))
+        using (var connection = new SQLiteConnection(connectionUrl))
         {
             connection.Open();
             Trace.WriteLine("Connected to database successfully.");
 
-            using (SQLiteCommand cmd = new SQLiteCommand(connection))
+            using (var cmd = new SQLiteCommand(connection))
             {
                 cmd.CommandText = "SELECT * FROM COMMANDS";
 
-                using (SQLiteDataReader reader = cmd.ExecuteReader())
+                using (var reader = cmd.ExecuteReader())
                 {
-                    List<Command> commands = new List<Command>();
+                    var commands = new List<Command>();
 
                     while (reader.Read())
                     {
-                        int id = Convert.ToInt32(reader["ID"]);
-                        string name = reader["NAME"].ToString();
-                        string command = reader["COMMAND"].ToString();
+                        var id = Convert.ToInt32(reader["ID"]);
+                        var name = reader["NAME"].ToString();
+                        var command = reader["COMMAND"].ToString();
                         commands.Add(new Command(id, name, command));
                     }
 
@@ -101,25 +101,25 @@ public class CommandTable
     {
         try
         {
-            using (SQLiteConnection connection = new SQLiteConnection(connectionUrl))
+            using (var connection = new SQLiteConnection(connectionUrl))
             {
                 connection.Open();
                 Trace.WriteLine("Connected to database successfully");
 
-                using (SQLiteCommand cmd = new SQLiteCommand(connection))
+                using (var cmd = new SQLiteCommand(connection))
                 {
                     cmd.CommandText = "SELECT * FROM COMMANDS WHERE NAME = @Name";
                     cmd.Parameters.AddWithValue("@Name", fileName);
 
-                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        List<Command> commands = new List<Command>();
+                        var commands = new List<Command>();
 
                         while (reader.Read())
                         {
-                            int id = Convert.ToInt32(reader["ID"]);
-                            string name = reader["NAME"].ToString();
-                            string command = reader["COMMAND"].ToString();
+                            var id = Convert.ToInt32(reader["ID"]);
+                            var name = reader["NAME"].ToString();
+                            var command = reader["COMMAND"].ToString();
                             commands.Add(new Command(id, name, command));
                         }
 
@@ -137,6 +137,5 @@ public class CommandTable
             Console.WriteLine(e);
             return new Command();
         }
-
     }
 }

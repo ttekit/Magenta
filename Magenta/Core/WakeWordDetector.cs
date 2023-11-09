@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Windows.Forms;
-using NAudio.Wave;
 using Pv;
 
 namespace Magenta.Core;
 
 public class WakeWordDetector
 {
+    public delegate void MagentaDetectedEvent();
+
+    public delegate void ShutUpDetectedEvent();
+
     private readonly string _accessKey;
 
     private readonly List<string> _keywordPaths;
+    private readonly string _modelPath;
 
     private readonly List<float> _sensitivities;
-    private string _modelPath;
     private int _audioDeviceIndex;
-
-    public event MagentaDetectedEvent MagentaDetected;
-    public event ShutUpDetectedEvent ShutUpDetected;
 
     public WakeWordDetector()
     {
@@ -34,12 +30,15 @@ public class WakeWordDetector
         _audioDeviceIndex = -1;
     }
 
+    public event MagentaDetectedEvent MagentaDetected;
+    public event ShutUpDetectedEvent ShutUpDetected;
+
     public void Start()
     {
         new Thread(o =>
         {
             Run(File.ReadAllText(Config.Instance.ApiKeysPath + "porc.txt"), _modelPath, _keywordPaths, _sensitivities,
-                _audioDeviceIndex);
+                Config.Instance.AudioDeviceIndex);
         }).Start();
     }
 
@@ -50,10 +49,10 @@ public class WakeWordDetector
         List<float> sensitivities,
         int audioDeviceIndex)
     {
-        using (Porcupine porcupine = Porcupine.FromKeywordPaths(accessKey, keywordPaths, modelPath, sensitivities))
+        using (var porcupine = Porcupine.FromKeywordPaths(accessKey, keywordPaths, modelPath, sensitivities))
         {
-            using (PvRecorder recorder =
-                   PvRecorder.Create(frameLength: porcupine.FrameLength, deviceIndex: audioDeviceIndex))
+            using (var recorder =
+                   PvRecorder.Create(porcupine.FrameLength, audioDeviceIndex))
             {
                 Trace.WriteLine($"Using device: {recorder.SelectedDevice}");
 
@@ -61,17 +60,12 @@ public class WakeWordDetector
 
                 while (recorder.IsRecording)
                 {
-                    short[] frame = recorder.Read();
+                    var frame = recorder.Read();
 
-                    int result = porcupine.Process(frame);
+                    var result = porcupine.Process(frame);
                     if (result == 0)
-                    {
                         MagentaDetected?.Invoke();
-                    }
-                    else if (result == 1)
-                    {
-                        ShutUpDetected?.Invoke();
-                    }
+                    else if (result == 1) ShutUpDetected?.Invoke();
 
 
                     Thread.Yield();
@@ -79,8 +73,4 @@ public class WakeWordDetector
             }
         }
     }
-
-    public delegate void MagentaDetectedEvent();
-
-    public delegate void ShutUpDetectedEvent();
 }

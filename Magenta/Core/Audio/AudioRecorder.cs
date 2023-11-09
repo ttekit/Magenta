@@ -1,8 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Windows;
 using NAudio.Lame;
 using NAudio.Wave;
 
@@ -10,13 +7,18 @@ namespace Magenta.Core.Audio;
 
 public class AudioRecorder
 {
-    private bool isRecording;
+    public delegate void RecordEndedEvent();
+
+    public delegate void RecordEndStartedEvent();
+
+    public delegate void RecordStartedEvent();
+
     private LameMP3FileWriter mp3Writer;
     private Stopwatch silenceTimer;
     private Stopwatch stopTimer;
     private WaveFileWriter waveFileWriter;
     private WaveInEvent waveSource;
-    public bool isEnded => isRecording;
+    public bool isEnded { get; private set; }
 
     public event RecordStartedEvent recordStarted;
     public event RecordEndedEvent recordEnded;
@@ -24,11 +26,13 @@ public class AudioRecorder
 
     public void StartRecording()
     {
-        if (isRecording) return;
+        if (isEnded) return;
         Trace.WriteLine("Recording started");
         silenceTimer = new Stopwatch();
         stopTimer = new Stopwatch();
         waveSource = new WaveInEvent();
+        // waveSource.DeviceNumber = Config.Instance.AudioDeviceIndex;
+
         waveSource.WaveFormat =
             new WaveFormat(Config.Instance.SAMPLE_RATE, Config.Instance.CHANNELS);
 
@@ -51,21 +55,21 @@ public class AudioRecorder
 
         if (stopTimer.ElapsedMilliseconds >= Config.Instance.STOP_DURATION_MS && stopTimer.IsRunning)
         {
-            isRecording = false;
+            isEnded = false;
             stopTimer.Stop();
             StopRecording();
         }
 
-        if (rms > Config.Instance.SILENCE_THRESHOLD && !isRecording)
+        if (rms > Config.Instance.SILENCE_THRESHOLD && !isEnded)
         {
             Trace.WriteLine("Voice Detected");
             stopTimer.Stop();
-            isRecording = true;
+            isEnded = true;
             recordStarted?.Invoke();
             silenceTimer.Start();
         }
 
-        if (isRecording)
+        if (isEnded)
         {
             waveFileWriter.Write(e.Buffer, 0, e.BytesRecorded);
             if (rms < Config.Instance.SILENCE_THRESHOLD)
@@ -95,9 +99,9 @@ public class AudioRecorder
         waveFileWriter.Close();
         waveFileWriter.Dispose();
 
-        if (isRecording)
+        if (isEnded)
         {
-            isRecording = false;
+            isEnded = false;
             recordEndStarted?.Invoke();
             using (var reader = new WaveFileReader(Config.Instance.TempFilesPath + "output.wav"))
             {
@@ -130,10 +134,4 @@ public class AudioRecorder
 
         return rms;
     }
-
-    public delegate void RecordEndedEvent();
-
-    public delegate void RecordStartedEvent();
-
-    public delegate void RecordEndStartedEvent();
 }

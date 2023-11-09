@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-
-namespace Magenta.Core.Execution.Executors;
+﻿namespace Magenta.Core.Execution.Executors;
 
 public class ESP32OnExecutor : IExecutor
 {

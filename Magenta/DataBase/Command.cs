@@ -2,10 +2,6 @@
 
 public class Command
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string CommandText { get; set; }
-
     public Command(int id, string name, string commandText)
     {
         Id = id;
@@ -19,6 +15,10 @@ public class Command
         Name = null;
         CommandText = null;
     }
+
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string CommandText { get; set; }
 
     public int GetId()
     {

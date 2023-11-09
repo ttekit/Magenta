@@ -10,8 +10,8 @@ namespace Magenta.Core.Audio;
 
 public class AudioRecognizer
 {
-    public event OnRecognitionEnded RecognitionEndedEvent;
     public string Result { get; private set; }
+    public event OnRecognitionEnded RecognitionEndedEvent;
 
     public async Task<string> Recognize(string audioFilePath)
     {
@@ -37,8 +37,8 @@ public class AudioRecognizer
             );
             Trace.WriteLine("RECOGNIZE ENDED");
             Trace.Write("RESPONSE: ");
-            string[] temp = response.ToSRT().Split(" - ");
-            for (int i = 1; i < temp.Length; i++)
+            var temp = response.ToSRT().Split(" - ");
+            for (var i = 1; i < temp.Length; i++)
             {
                 Console.WriteLine(temp);
                 Result += temp[i];
@@ -52,7 +52,7 @@ public class AudioRecognizer
     public string RecognizeVersionTwo(string audioFilePath)
     {
         var speech = SpeechClient.Create();
-        string res = "";
+        var res = "";
         var config = new RecognitionConfig
         {
             Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
@@ -64,12 +64,8 @@ public class AudioRecognizer
         var response = speech.Recognize(config, audio);
 
         foreach (var result in response.Results)
-        {
-            foreach (var alternative in result.Alternatives)
-            {
-                res = alternative.Transcript;
-            }
-        }
+        foreach (var alternative in result.Alternatives)
+            res = alternative.Transcript;
 
         Result = res;
         RecognitionEndedEvent?.Invoke();

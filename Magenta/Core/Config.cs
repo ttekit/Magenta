@@ -32,8 +32,11 @@ public class Config
     public string HistoryDir => RootPath + @"history\";
     public string AudioDir => RootPath + @"audio\";
 
-    public string RECORD_START_SOUND_URI => AudioDir+"bipStart.mp3";
-    public string RECORD_END_SOUND_URI => AudioDir+"bipEnd.mp3";
+    public string RECORD_START_SOUND_URI => AudioDir + "bipStart.mp3";
+    public string RECORD_END_SOUND_URI => AudioDir + "bipEnd.mp3";
+
+    public int AudioDeviceIndex = 0;
+
     // MICRO
     public int SAMPLE_RATE => 44100;
     public int CHANNELS => 1;

@@ -4,13 +4,13 @@ namespace Magenta.Core.Execution.DataBase;
 
 public class WordsArray
 {
-    private List<string> words;
-    private List<bool> state;
+    private readonly List<bool> state;
+    private readonly List<string> words;
 
     public WordsArray()
     {
-        this.words = new List<string>();
-        this.state = new List<bool>();
+        words = new List<string>();
+        state = new List<bool>();
     }
 
     public void AddWord(string word)
@@ -21,26 +21,18 @@ public class WordsArray
 
     public int GetWordIndex(string word)
     {
-        for (int i = 0; i < words.Count; i++)
-        {
+        for (var i = 0; i < words.Count; i++)
             if (word.Contains(words[i]))
-            {
                 return i;
-            }
-        }
 
         return -1;
     }
 
     public bool Contains(string word)
     {
-        foreach (string s in words)
-        {
+        foreach (var s in words)
             if (word.Contains(s))
-            {
                 return true;
-            }
-        }
 
         return false;
     }
@@ -57,6 +49,6 @@ public class WordsArray
 
     public bool GetState(int id)
     {
-        return this.state[id];
+        return state[id];
     }
 }

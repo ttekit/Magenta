@@ -2,38 +2,52 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Threading;
 using Magenta.Core;
 using Magenta.Core.Audio;
-using Magenta.Core.Web;
+using NAudio.CoreAudioApi;
 
 namespace Magenta;
 
 public partial class MainWindow : Window
 {
-    private MainApplication _mainApplication;
-    private static MediaPlayer _mediaPlayer;
-    public static MediaPlayer MediaPlayer => _mediaPlayer;
+    private readonly MMDeviceCollection _audioDevicesInfo;
+    private readonly MainApplication _mainApplication;
 
     public MainWindow()
     {
         InitializeComponent();
-        _mediaPlayer = new MediaPlayer();
+        MediaPlayer = new MediaPlayer();
         _mainApplication = new MainApplication();
+        var enumerator = new MMDeviceEnumerator();
+        _audioDevicesInfo = enumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+        AddListeners();
+        // Config.LoadConfig();
     }
+
+    public static MediaPlayer MediaPlayer { get; private set; }
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
         _mainApplication.StartListening();
+        InitFields();
+    }
 
+    private void InitFields()
+    {
+        SampleRateTextBox.Text = Config.Instance.SAMPLE_RATE.ToString();
+        foreach (var info in _audioDevicesInfo) AudioDevicesComboBox.Items.Add(info.DeviceFriendlyName);
+    }
+
+    private void AddListeners()
+    {
         _mainApplication.WakeWordDetector.MagentaDetected += () =>
         {
             Task.Run(() =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    _mediaPlayer.Open(new Uri(Config.Instance.RECORD_START_SOUND_URI));
-                    _mediaPlayer.Play();
+                    MediaPlayer.Open(new Uri(Config.Instance.RECORD_START_SOUND_URI));
+                    MediaPlayer.Play();
                 });
             });
         };
@@ -43,8 +57,8 @@ public partial class MainWindow : Window
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    _mediaPlayer.Stop();
-                    _mediaPlayer.Close();
+                    MediaPlayer.Stop();
+                    MediaPlayer.Close();
                 });
             });
         };
@@ -54,19 +68,8 @@ public partial class MainWindow : Window
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    _mediaPlayer.Open(new Uri(Config.Instance.RECORD_END_SOUND_URI));
-                    _mediaPlayer.Play();
-                });
-            });
-        };
-        _mainApplication.Speech.Recognizer.RecognitionEndedEvent += () =>
-        {
-            Task.Run(() =>
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    RecResulTextBlock.Text = _mainApplication.Speech.Recognizer.Result;
-                    ResponseTextBlock.Text = _mainApplication.Gpt.Result;
+                    MediaPlayer.Open(new Uri(Config.Instance.RECORD_END_SOUND_URI));
+                    MediaPlayer.Play();
                 });
             });
         };
@@ -76,10 +79,29 @@ public partial class MainWindow : Window
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    _mediaPlayer.Open(new Uri(TextDubber.AudioFilePath));
-                    _mediaPlayer.Play();
+                    MediaPlayer.Open(new Uri(TextDubber.AudioFilePath));
+                    MediaPlayer.Play();
                 });
             });
         };
+    }
+
+    private void AudioDevicesComboBox_OnSelected(object sender, RoutedEventArgs e)
+    {
+        var desiredDeviceName = AudioDevicesComboBox.SelectedItem.ToString();
+        var id = 0;
+        for (var i = 0; i < _audioDevicesInfo.Count; i++)
+            if (_audioDevicesInfo[i].DeviceFriendlyName == desiredDeviceName)
+            {
+                id = i;
+                break;
+            }
+
+        Config.Instance.AudioDeviceIndex = id;
+    }
+
+    private void SaveChangesButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        // Config.Instance.SaveConfig();
     }
 }

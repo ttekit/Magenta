@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using Magenta.Core.Execution.Executors;
-using Newtonsoft.Json.Serialization;
 
 namespace Magenta.Core.Execution;
 
 public class Executor
 {
+    private readonly Dictionary<string, IExecutor> _executors;
     private string _command;
-    private Dictionary<string, IExecutor> _executors;
 
     public Executor()
     {
@@ -32,18 +30,15 @@ public class Executor
     {
         Trace.WriteLine("Started command execution: " + command);
         command = command.Replace("[^A-Za-zА-Яа-я0-9]", " ");
-        string[] commandWords = command.ToLower().Split(" ");
-        string choose = "";
-        StringBuilder stringBuilder = new StringBuilder();
+        var commandWords = command.ToLower().Split(" ");
+        var choose = "";
+        var stringBuilder = new StringBuilder();
 
         foreach (var commandWord in commandWords)
         {
             Trace.WriteLine(commandWord);
             Trace.WriteLine(_executors.ContainsKey(commandWord));
-            if (_executors.ContainsKey(commandWord.Trim()))
-            {
-                choose = commandWord.Trim();
-            }
+            if (_executors.ContainsKey(commandWord.Trim())) choose = commandWord.Trim();
 
             stringBuilder.Append(commandWord).Append(" ");
         }
@@ -54,10 +49,9 @@ public class Executor
         return executeAction(choose, stringBuilder.ToString());
     }
 
-    private string executeAction(string action, String command)
+    private string executeAction(string action, string command)
     {
         foreach (var value in _executors.Keys)
-        {
             if (Equals(value, action))
             {
                 IExecutor executor;
@@ -67,7 +61,6 @@ public class Executor
                 Trace.WriteLine("Current command details: " + executor.Command);
                 return executor.Execute();
             }
-        }
 
         return "";
     }

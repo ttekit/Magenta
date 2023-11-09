@@ -1,4 +1,6 @@
-﻿namespace Magenta.Core.Execution.Executors;
+﻿using System;
+
+namespace Magenta.Core.Execution.Executors;
 
 public class ESP32OffExecutor : IExecutor
 {
@@ -6,6 +8,6 @@ public class ESP32OffExecutor : IExecutor
 
     public string Execute()
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 }
