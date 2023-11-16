@@ -21,8 +21,9 @@ public class MainApplication
         Speech.Recognizer.RecognitionEndedEvent += RecognizerOnRecognitionEndedEvent;
         Speech.Dubber.AnnounceEnded += DubberOnAnnounceEnded;
         Gpt.resultsObtained += GptOnresultsObtained;
-
-        MainWindow.MediaPlayer.MediaEnded += MediaPlayerOnMediaEnded;
+        MainWindow._mediaPlayer.MediaEnded += MediaPlayerOnMediaEnded;
+        
+        Speech.Recorder.recordStarted += () => _isWorkingEnded = false;
     }
 
     public WakeWordDetector WakeWordDetector { get; }
@@ -54,6 +55,7 @@ public class MainApplication
 
     private void GptOnresultsObtained()
     {
+        Trace.WriteLine("RESULTS OBTAINED");
         Speech.Announce(Gpt.Result);
     }
 

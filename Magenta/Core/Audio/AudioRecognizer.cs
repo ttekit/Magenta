@@ -16,7 +16,7 @@ public class AudioRecognizer
     public async Task<string> Recognize(string audioFilePath)
     {
         Trace.WriteLine("RECOGNIZE STARTED");
-        var credentials = new Credentials(File.ReadAllText(Config.Instance.ApiKeysPath + "deepgram.txt"));
+        var credentials = new Credentials(File.ReadAllText(Config.Instance.API_KEYS_PATH + "deepgram.txt"));
 
         var deepgramClient = new DeepgramClient(credentials);
 

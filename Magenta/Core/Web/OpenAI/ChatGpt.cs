@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using Newtonsoft.Json.Linq;
@@ -18,7 +19,7 @@ public class ChatGpt
     {
         try
         {
-            apiKey = File.ReadAllText(Config.Instance.ApiKeysPath + "openAi.txt");
+            apiKey = File.ReadAllText(Config.Instance.API_KEYS_PATH + "openAi.txt");
             messages = new JArray();
             var settingsMessage = new JObject();
             settingsMessage["role"] = "system";
@@ -56,6 +57,9 @@ public class ChatGpt
         var requests = new WebRequests("", httpWebRequest);
         var response = requests.execute(data);
         var content = JObject.Parse(response)["choices"]?[0]?["message"]?["content"]?.ToString();
+        
+        Trace.WriteLine(content);
+        
         messages.Add(JObject.Parse(response)["choices"]?[0]?["message"] ?? throw new InvalidOperationException());
 
         SaveToFile();
@@ -70,7 +74,7 @@ public class ChatGpt
     {
         try
         {
-            var dir = new DirectoryInfo(Config.Instance.HistoryDir);
+            var dir = new DirectoryInfo(Config.Instance.HISTORY_DIR);
             var file = new FileInfo(Path.Combine(dir.FullName, historyFileName));
 
 

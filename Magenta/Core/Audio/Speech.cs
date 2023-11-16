@@ -49,7 +49,7 @@ public class Speech : ISpeech
 
     private void RecorderOnRecordEnded()
     {
-        Recognition(Config.Instance.TempFilesPath + "output.wav");
+        Recognition(Config.Instance.TEMP_FILES_PATH + "output.wav");
     }
 
     public void Announce(string text)

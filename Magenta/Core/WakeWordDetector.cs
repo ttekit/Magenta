@@ -22,7 +22,7 @@ public class WakeWordDetector
 
     public WakeWordDetector()
     {
-        _accessKey = File.ReadAllText(Config.Instance.ApiKeysPath + "porc.txt");
+        _accessKey = File.ReadAllText(Config.Instance.API_KEYS_PATH + "porc.txt");
         _keywordPaths = new List<string>
             { @"C:\Magenta_en_windows_v2_2_0.ppn", @"C:\Shut-up_en_windows_v2_2_0.ppn" };
         _sensitivities = new List<float> { 0.8f, 0.8f };
@@ -37,7 +37,7 @@ public class WakeWordDetector
     {
         new Thread(o =>
         {
-            Run(File.ReadAllText(Config.Instance.ApiKeysPath + "porc.txt"), _modelPath, _keywordPaths, _sensitivities,
+            Run(File.ReadAllText(Config.Instance.API_KEYS_PATH + "porc.txt"), _modelPath, _keywordPaths, _sensitivities,
                 Config.Instance.AudioDeviceIndex);
         }).Start();
     }

@@ -43,20 +43,24 @@
         <Label Grid.Column="0">Audio and Micro Settings</Label>
         <Label Grid.Column="1">ESP32 Settings</Label>
         <Label Grid.Column="2">Global Settings</Label>
-        <Label Grid.Column="3">Info</Label>
+        <Label Grid.Column="3">Load History File</Label>
 
         <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Orientation="Vertical">
             <Label>Sample Rate</Label>
             <TextBox x:Name="SampleRateTextBox">4412</TextBox>
             <Label> Audio Device</Label>
             <ComboBox Width="300" x:Name="AudioDevicesComboBox" SelectionChanged="AudioDevicesComboBox_OnSelected" />
-            <Button x:Name="StartRecordingSoundButton">Start Recording Sound</Button>
-            <Button x:Name="EndRecordingSoundButton">End Recording Sound</Button>
+            <Button x:Name="StartRecordingSoundButton" Click="StartRecordingSoundButton_OnClick">Start Recording Sound</Button>
+            <Button x:Name="EndRecordingSoundButton" Click="EndRecordingSoundButton_OnClick">End Recording Sound</Button>
 
         </WrapPanel>
         <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="1" />
         <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="2" />
-        <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="3" />
+        <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="3">
+            <ListView x:Name="HistoryListView" MouseDoubleClick="HistoryListView_OnMouseDoubleClick">
+                
+            </ListView>
+        </WrapPanel>
         <WrapPanel Grid.ColumnSpan="4" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center"
                    HorizontalAlignment="Center">
             <Button x:Name="SaveChangesButton" Click="SaveChangesButton_OnClick">Save Changes</Button>

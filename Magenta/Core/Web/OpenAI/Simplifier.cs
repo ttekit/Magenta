@@ -18,7 +18,7 @@ public class Simplifier
 
     public Simplifier()
     {
-        _apiKey = File.ReadAllText(Config.Instance.ApiKeysPath + "openAi.txt");
+        _apiKey = File.ReadAllText(Config.Instance.API_KEYS_PATH + "openAi.txt");
     }
 
     public string Result { get; private set; }

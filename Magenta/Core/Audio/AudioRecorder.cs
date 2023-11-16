@@ -34,10 +34,10 @@ public class AudioRecorder
         // waveSource.DeviceNumber = Config.Instance.AudioDeviceIndex;
 
         waveSource.WaveFormat =
-            new WaveFormat(Config.Instance.SAMPLE_RATE, Config.Instance.CHANNELS);
+            new WaveFormat(Config.Instance.SampleRate, Config.Instance.Channels);
 
         waveFileWriter =
-            new WaveFileWriter(Config.Instance.TempFilesPath + "output.wav", waveSource.WaveFormat);
+            new WaveFileWriter(Config.Instance.TEMP_FILES_PATH + "output.wav", waveSource.WaveFormat);
 
 
         waveSource.DataAvailable += WaveSource_DataAvailable;
@@ -53,14 +53,14 @@ public class AudioRecorder
         var rms = CalculateRMS(e.Buffer, e.BytesRecorded);
         Trace.WriteLine(rms);
 
-        if (stopTimer.ElapsedMilliseconds >= Config.Instance.STOP_DURATION_MS && stopTimer.IsRunning)
+        if (stopTimer.ElapsedMilliseconds >= Config.Instance.StopDurationMs && stopTimer.IsRunning)
         {
             isEnded = false;
             stopTimer.Stop();
             StopRecording();
         }
 
-        if (rms > Config.Instance.SILENCE_THRESHOLD && !isEnded)
+        if (rms > Config.Instance.SilenceThreshold && !isEnded)
         {
             Trace.WriteLine("Voice Detected");
             stopTimer.Stop();
@@ -72,9 +72,9 @@ public class AudioRecorder
         if (isEnded)
         {
             waveFileWriter.Write(e.Buffer, 0, e.BytesRecorded);
-            if (rms < Config.Instance.SILENCE_THRESHOLD)
+            if (rms < Config.Instance.SilenceThreshold)
             {
-                if (silenceTimer.ElapsedMilliseconds >= Config.Instance.SILENCE_DURATION_MS)
+                if (silenceTimer.ElapsedMilliseconds >= Config.Instance.SilenceDurationMs)
                 {
                     silenceTimer.Stop();
                     Trace.WriteLine("Silence Detected");
@@ -103,9 +103,9 @@ public class AudioRecorder
         {
             isEnded = false;
             recordEndStarted?.Invoke();
-            using (var reader = new WaveFileReader(Config.Instance.TempFilesPath + "output.wav"))
+            using (var reader = new WaveFileReader(Config.Instance.TEMP_FILES_PATH + "output.wav"))
             {
-                mp3Writer = new LameMP3FileWriter(Config.Instance.TempFilesPath + "output.mp3", reader.WaveFormat,
+                mp3Writer = new LameMP3FileWriter(Config.Instance.TEMP_FILES_PATH + "output.mp3", reader.WaveFormat,
                     128);
 
                 reader.CopyTo(mp3Writer);

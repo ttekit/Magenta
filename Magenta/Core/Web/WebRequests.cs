@@ -28,7 +28,6 @@ public class WebRequests
             using (var responseStream = new StreamReader(response.GetResponseStream()))
             {
                 var responseString = responseStream.ReadToEnd();
-                Trace.WriteLine(responseString);
                 return responseString;
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using Google.Cloud.TextToSpeech.V1;
@@ -7,7 +8,7 @@ namespace Magenta.Core.Audio;
 
 public class TextDubber
 {
-    public static readonly string AudioFilePath = Config.Instance.TempFilesPath + "textAnnounce.wav";
+    public static readonly string AudioFilePath = Config.Instance.TEMP_FILES_PATH + "textAnnounce.wav";
     public event AnnounceEndedEvent AnnounceEnded;
     public event AnnounceStartedEvent AnnounceStarted;
 
@@ -15,7 +16,7 @@ public class TextDubber
     {
         AnnounceStarted?.Invoke();
 
-        var jsonKeyFilePath = Config.Instance.ApiKeysPath + "google.json";
+        var jsonKeyFilePath = Config.Instance.API_KEYS_PATH + "google.json";
         var clientBuilder = new TextToSpeechClientBuilder
         {
             JsonCredentials = File.ReadAllText(jsonKeyFilePath)
@@ -50,7 +51,7 @@ public class TextDubber
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Trace.WriteLine(e);
                 Thread.Sleep(100);
             }
 

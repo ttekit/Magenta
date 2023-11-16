@@ -36,10 +36,7 @@ public class Executor
 
         foreach (var commandWord in commandWords)
         {
-            Trace.WriteLine(commandWord);
-            Trace.WriteLine(_executors.ContainsKey(commandWord));
             if (_executors.ContainsKey(commandWord.Trim())) choose = commandWord.Trim();
-
             stringBuilder.Append(commandWord).Append(" ");
         }
 

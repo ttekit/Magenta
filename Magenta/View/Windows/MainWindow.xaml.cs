@@ -1,9 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using Magenta.Core;
 using Magenta.Core.Audio;
+using Microsoft.Win32;
 using NAudio.CoreAudioApi;
 
 namespace Magenta;
@@ -16,15 +20,15 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        MediaPlayer = new MediaPlayer();
+        _mediaPlayer = new MediaPlayer();
         _mainApplication = new MainApplication();
         var enumerator = new MMDeviceEnumerator();
         _audioDevicesInfo = enumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
         AddListeners();
-        // Config.LoadConfig();
+        Config.LoadConfig();
     }
 
-    public static MediaPlayer MediaPlayer { get; private set; }
+    public static MediaPlayer _mediaPlayer { get; private set; }
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
@@ -34,7 +38,7 @@ public partial class MainWindow : Window
 
     private void InitFields()
     {
-        SampleRateTextBox.Text = Config.Instance.SAMPLE_RATE.ToString();
+        SampleRateTextBox.Text = Config.Instance.SampleRate.ToString();
         foreach (var info in _audioDevicesInfo) AudioDevicesComboBox.Items.Add(info.DeviceFriendlyName);
     }
 
@@ -46,8 +50,8 @@ public partial class MainWindow : Window
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    MediaPlayer.Open(new Uri(Config.Instance.RECORD_START_SOUND_URI));
-                    MediaPlayer.Play();
+                    _mediaPlayer.Open(new Uri(Config.Instance.RECORD_START_SOUND_URI));
+                    _mediaPlayer.Play();
                 });
             });
         };
@@ -57,8 +61,8 @@ public partial class MainWindow : Window
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    MediaPlayer.Stop();
-                    MediaPlayer.Close();
+                    _mediaPlayer.Stop();
+                    _mediaPlayer.Close();
                 });
             });
         };
@@ -68,8 +72,8 @@ public partial class MainWindow : Window
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    MediaPlayer.Open(new Uri(Config.Instance.RECORD_END_SOUND_URI));
-                    MediaPlayer.Play();
+                    _mediaPlayer.Open(new Uri(Config.Instance.RECORD_END_SOUND_URI));
+                    _mediaPlayer.Play();
                 });
             });
         };
@@ -79,11 +83,12 @@ public partial class MainWindow : Window
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    MediaPlayer.Open(new Uri(TextDubber.AudioFilePath));
-                    MediaPlayer.Play();
+                    _mediaPlayer.Open(new Uri(TextDubber.AudioFilePath));
+                    _mediaPlayer.Play();
                 });
             });
         };
+        _mediaPlayer.MediaEnded += (sender, args) => { _mediaPlayer.Close(); };
     }
 
     private void AudioDevicesComboBox_OnSelected(object sender, RoutedEventArgs e)
@@ -102,6 +107,34 @@ public partial class MainWindow : Window
 
     private void SaveChangesButton_OnClick(object sender, RoutedEventArgs e)
     {
-        // Config.Instance.SaveConfig();
+        Config.SaveConfig();
+        System.Windows.Forms.Application.Restart();
+    }
+
+    private void StartRecordingSoundButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenFileDialog openFileDialog = new OpenFileDialog();
+        openFileDialog.Filter = "Audio Fiels (*.mp3;*.wav)";
+
+        if (openFileDialog.ShowDialog() == true)
+        {
+            File.Copy(openFileDialog.FileName, Config.Instance.RECORD_START_SOUND_URI, true);
+        }
+    }
+
+    private void EndRecordingSoundButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenFileDialog openFileDialog = new OpenFileDialog();
+        openFileDialog.Filter = "Audio Fiels (*.mp3;*.wav)";
+
+        if (openFileDialog.ShowDialog() == true)
+        {
+            File.Copy(openFileDialog.FileName, Config.Instance.RECORD_END_SOUND_URI, true);
+        }
+    }
+
+    private void HistoryListView_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        //TODO
     }
 }
