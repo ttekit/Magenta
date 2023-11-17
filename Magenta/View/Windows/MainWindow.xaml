@@ -42,7 +42,7 @@
         </Grid.Resources>
         <Label Grid.Column="0">Audio and Micro Settings</Label>
         <Label Grid.Column="1">ESP32 Settings</Label>
-        <Label Grid.Column="2">Global Settings</Label>
+        <Label Grid.Column="2">Answer Settings</Label>
         <Label Grid.Column="3">Load History File</Label>
 
         <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Orientation="Vertical">
@@ -54,11 +54,24 @@
             <Button x:Name="EndRecordingSoundButton" Click="EndRecordingSoundButton_OnClick">End Recording Sound</Button>
 
         </WrapPanel>
-        <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="1" />
-        <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="2" />
+        <WrapPanel HorizontalAlignment="Center" Orientation="Vertical" Grid.RowSpan="4" Grid.Row="1" Grid.Column="1">
+
+        </WrapPanel>
+        <WrapPanel  Grid.RowSpan="4" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" Orientation="Vertical">
+            <Label>Satiric %</Label>
+            <TextBox Width="300" x:Name="sadf">100</TextBox>
+            <Label>Behavior</Label>
+            <TextBox x:Name="fdas">в стиле jarvis</TextBox>
+            <Label>Jokes %</Label>
+            <TextBox x:Name="sdfg">50</TextBox>
+            <Label>Agressive %</Label>
+            <TextBox x:Name="xcb">5</TextBox>
+            <Label>Tolerance %</Label>
+            <TextBox x:Name="jlkl">0</TextBox>
+        </WrapPanel>
         <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="3">
             <ListView x:Name="HistoryListView" MouseDoubleClick="HistoryListView_OnMouseDoubleClick">
-                
+
             </ListView>
         </WrapPanel>
         <WrapPanel Grid.ColumnSpan="4" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center"

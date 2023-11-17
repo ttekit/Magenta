@@ -17,10 +17,10 @@ public class Executor
         _executors["открыть"] = new OpenExecutor();
         _executors["закрой"] = new CloseExecutor();
         _executors["закрыть"] = new CloseExecutor();
-        _executors["включи"] = new ESP32OnExecutor();
-        _executors["включить"] = new ESP32OffExecutor();
-        _executors["выключи"] = new ESP32OnExecutor();
         _executors["выключить"] = new ESP32OffExecutor();
+        _executors["выключи"] = new ESP32OffExecutor();
+        _executors["включи"] = new ESP32OnExecutor();
+        _executors["включить"] = new ESP32OnExecutor();
         _executors["гугл"] = new GoogleExecutor();
         _executors["загуглить"] = new GoogleExecutor();
         _executors["youtube"] = new YoutubeExecutor();

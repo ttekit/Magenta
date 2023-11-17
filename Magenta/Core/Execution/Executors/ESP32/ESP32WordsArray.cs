@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Threading;
+using System.Windows;
+using System.Xml;
 using Magenta.Core.Execution.DataBase;
 using Magenta.Core.Web;
 using Newtonsoft.Json;
@@ -10,12 +14,20 @@ namespace Magenta.Core.Execution.Executors;
 
 public class ESP32WordsArray
 {
-    public static ESP32OffExecutor Instance;
+    public static ESP32WordsArray _instance;
     private readonly WordsArray words;
 
-    static ESP32WordsArray()
+    private const int MaxRetries = 3;
+    private const int DelayBetweenRetriesMs = 500;
+
+    public static ESP32WordsArray Instance
     {
-        Instance = new ESP32OffExecutor();
+        get
+        {
+            if (_instance == null) _instance = new ESP32WordsArray();
+            return _instance;
+        }
+        private set => _instance = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     private ESP32WordsArray()
@@ -24,8 +36,12 @@ public class ESP32WordsArray
         words.AddWord("чайник");
         words.AddWord("свет");
         words.AddWord("камин");
-        words.AddWord("что-то ещё");
         GetStateArray();
+    }
+
+    public bool Contains(string s)
+    {
+        return words.Contains(s);
     }
 
     public string GetIdAbbr(int id)
@@ -40,22 +56,75 @@ public class ESP32WordsArray
         };
     }
 
+    public string GetIdAbbr(string word)
+    {
+        int id = GetWordId(word);
+        switch (id + 1)
+        {
+            case 1: return "PO";
+            case 2: return "PT";
+            case 3: return "PF";
+            case 4: return "PFR";
+        }
+
+        return "";
+    }
+
+    public int GetWordId(string word)
+    {
+        return words.GetWordIndex(word);
+    }
+
+    public bool GetState(string name)
+    {
+        return words.GetState(name);
+    }
+
     private void GetStateArray()
     {
-        try
-        {
-            var request = (HttpWebRequest)WebRequest.Create("http://192.168.1.130/pins");
-            request.Method = "GET";
-            request.ContentType = "application/json";
+        int retryCount = 0;
 
-            var webRequests = new WebRequests("http://192.168.1.130/pins", request);
-            var response = webRequests.execute(new JObject());
-            var jsonArray = JsonConvert.DeserializeObject<List<Dictionary<string, int>>>(response);
-            for (var i = 0; i < jsonArray.Count; i++) words.SetState(i, jsonArray[i]["state"] == 1);
-        }
-        catch (Exception e)
+        while (retryCount < MaxRetries)
         {
-            throw new Exception(e.Message);
+            try
+            {
+                WebRequest request = WebRequest.Create("http://192.168.1.130/pins");
+                request.Method = "GET";
+                string data = "";
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (Stream stream = response.GetResponseStream())
+                    {
+                        data = new StreamReader(stream).ReadToEnd();
+                    }
+                }
+
+                if (data != "")
+                {
+                    List<Dictionary<string, int>>
+                        jsonArray = JsonConvert.DeserializeObject<List<Dictionary<string, int>>>(data);
+                    for (var i = 0; i < jsonArray.Count; i++)
+                    {
+                        words.SetState(i, jsonArray[i]["state"].ToString() == "1");
+                    }
+                }
+                return;
+            }
+            catch (Exception e)
+            {
+                retryCount++;
+                Thread.Sleep(DelayBetweenRetriesMs);
+            }
         }
+    }
+
+    public void SetState(int id, bool b)
+    {
+        words.SetState(id, b);
+    }
+
+    public void UpdateStates()
+    {
+        GetStateArray();
     }
 }

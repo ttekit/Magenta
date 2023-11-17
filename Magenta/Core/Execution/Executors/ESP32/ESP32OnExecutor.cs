@@ -1,4 +1,11 @@
-﻿namespace Magenta.Core.Execution.Executors;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Text;
+using Magenta.Core.Web;
+
+namespace Magenta.Core.Execution.Executors;
 
 public class ESP32OnExecutor : IExecutor
 {
@@ -6,32 +13,48 @@ public class ESP32OnExecutor : IExecutor
 
     public string Execute()
     {
-        // string urlBase = "http://192.168.1.130/";
-        // Trace.WriteLine("Started turn on");
-        // Command = Command.Trim();
-        //
-        // if (ESP32WordsArray.Instance.Contains(Command))
-        // {
-        //     int id =  ESP32WordsArray.Instance.GetWordIndex(Command);
-        //     Trace.WriteLine(Command);
-        //
-        //     if ( ESP32WordsArray.Instance.GetState(id))
-        //     {
-        //         Trace.WriteLine("State: " +  ESP32WordsArray.Instance.GetState(id));
-        //         Trace.WriteLine("Word is detected");
-        //         
-        //         urlBase +=  ESP32WordsArray.Instance.GetIdAbbr(id);
-        //         urlBase += "/L";
-        //         WebExecutor.Instance.SendGetTextHtmlRequest(new Uri(urlBase));
-        //         
-        //         words.SetState(id, true);
-        //         return "Устройство успешно включено";
-        //     }
-        //
-        //     return "Не вышло включить устройство, оно уже было включено";
-        // }
-        //
-        // return "Не вышло включить устройство";
-        return "";
+        string urlBase = "http://192.168.1.130/";
+        Trace.WriteLine("Started turn on");
+        Command = Command.Trim();
+
+        if (ESP32WordsArray.Instance.Contains(Command))
+        {
+            Trace.WriteLine(Command);
+            ESP32WordsArray.Instance.UpdateStates();
+            if (ESP32WordsArray.Instance.GetState(Command))
+            {
+                int id = ESP32WordsArray.Instance.GetWordId(Command);
+                Trace.WriteLine("State: " + ESP32WordsArray.Instance.GetState(Command));
+                Trace.WriteLine("Word is detected");
+
+                urlBase += ESP32WordsArray.Instance.GetIdAbbr(Command);
+                urlBase += "/L";
+
+                sendRequest(urlBase);
+
+                ESP32WordsArray.Instance.SetState(id, true);
+                return "Устройство успешно включено";
+            }
+
+            return "Не вышло включить устройство, оно уже было включено";
+        }
+
+        return "Не вышло включить устройство";
+    }
+
+    private void sendRequest(string q)
+    {
+        try
+        {
+            var request = (HttpWebRequest)WebRequest.Create(q);
+
+            request.Method = "GET";
+
+            request.GetResponse();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 }

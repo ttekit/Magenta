@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Magenta.Core.Execution.DataBase;
 
@@ -44,11 +45,36 @@ public class WordsArray
 
     public void SetState(int id, bool state)
     {
-        this.state[id] = state;
+        if (id < this.state.Count)
+        {
+            this.state[id] = state;
+        }
+        else
+        {
+            this.state.Add(state);
+        }
     }
 
     public bool GetState(int id)
     {
         return state[id];
+    }
+
+    public bool GetState(string word)
+    {
+        for (int i = 0; i < words.Count; i++)
+        {
+            if (words[i].Contains(word))
+            {
+                return state[i];
+            }
+        }
+
+        return false;
+    }
+
+    public string GetAbbr(int id)
+    {
+        return words[id];
     }
 }
