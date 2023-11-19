@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
-using System.Text;
-using Magenta.Core.Web;
 
 namespace Magenta.Core.Execution.Executors;
 
@@ -13,7 +10,7 @@ public class ESP32OnExecutor : IExecutor
 
     public string Execute()
     {
-        string urlBase = "http://192.168.1.130/";
+        var urlBase = "http://192.168.1.130/";
         Trace.WriteLine("Started turn on");
         Command = Command.Trim();
 
@@ -23,7 +20,7 @@ public class ESP32OnExecutor : IExecutor
             ESP32WordsArray.Instance.UpdateStates();
             if (ESP32WordsArray.Instance.GetState(Command))
             {
-                int id = ESP32WordsArray.Instance.GetWordId(Command);
+                var id = ESP32WordsArray.Instance.GetWordId(Command);
                 Trace.WriteLine("State: " + ESP32WordsArray.Instance.GetState(Command));
                 Trace.WriteLine("Word is detected");
 

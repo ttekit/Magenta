@@ -22,7 +22,7 @@ public class MainApplication
         Speech.Dubber.AnnounceEnded += DubberOnAnnounceEnded;
         Gpt.resultsObtained += GptOnresultsObtained;
         MainWindow._mediaPlayer.MediaEnded += MediaPlayerOnMediaEnded;
-        
+
         Speech.Recorder.recordStarted += () => _isWorkingEnded = false;
     }
 

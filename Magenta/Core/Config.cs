@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Windows.Forms;
 using Newtonsoft.Json;
 
 namespace Magenta.Core;
@@ -8,6 +7,11 @@ namespace Magenta.Core;
 public class Config
 {
     private static Config _config;
+
+    private Config()
+    {
+    }
+
     [JsonIgnore] public string ROOT_PATH => @"E:\Magenta\Magenta\";
 
     [JsonIgnore] public string CONFIG_PATH => @"E:\Magenta\Magenta\config.json";
@@ -19,10 +23,7 @@ public class Config
 
     [JsonIgnore] public string RECORD_START_SOUND_URI => AUDIO_DIR + "bipStart.mp3";
     [JsonIgnore] public string RECORD_END_SOUND_URI => AUDIO_DIR + "bipEnd.mp3";
-
-    private Config()
-    {
-    }
+    [JsonIgnore] public string ANSWER_SETTINGS_PATH => ROOT_PATH + "answerSettings.json";
 
     public static Config Instance
     {
@@ -34,60 +35,29 @@ public class Config
         private set => _config = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    private int _silenceDurationMs = 1000;
-    private int _stopDurationMs = 3000;
-    private float _silenceThreshold = 0.01f;
-    private int _audioDeviceIndex = 0;
-    private int _sampleRate = 44100;
-    private int _channels = 1;
+    public int SilenceDurationMs { get; set; } = 1000;
 
-    public int SilenceDurationMs
-    {
-        get => _silenceDurationMs;
-        set => _silenceDurationMs = value;
-    }
+    public int StopDurationMs { get; set; } = 3000;
 
-    public int StopDurationMs
-    {
-        get => _stopDurationMs;
-        set => _stopDurationMs = value;
-    }
+    public float SilenceThreshold { get; set; } = 0.01f;
 
-    public float SilenceThreshold
-    {
-        get => _silenceThreshold;
-        set => _silenceThreshold = value;
-    }
+    public int AudioDeviceIndex { get; set; } = 0;
 
-    public int AudioDeviceIndex
-    {
-        get => _audioDeviceIndex;
-        set => _audioDeviceIndex = value;
-    }
+    public int SampleRate { get; set; } = 44100;
 
-    public int SampleRate
-    {
-        get => _sampleRate;
-        set => _sampleRate = value;
-    }
-
-    public int Channels
-    {
-        get => _channels;
-        set => _channels = value;
-    }
+    public int Channels { get; set; } = 1;
 
     public static void LoadConfig()
     {
         if (!File.Exists(_config.CONFIG_PATH)) return;
 
-        string jsonString = File.ReadAllText(_config.CONFIG_PATH);
+        var jsonString = File.ReadAllText(_config.CONFIG_PATH);
         _config = JsonConvert.DeserializeObject<Config>(jsonString);
     }
 
     public static void SaveConfig()
     {
-        string jsonString = JsonConvert.SerializeObject(_config);
+        var jsonString = JsonConvert.SerializeObject(_config);
         File.WriteAllText(_config.CONFIG_PATH, jsonString);
     }
 }

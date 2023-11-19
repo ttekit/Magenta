@@ -12,8 +12,6 @@ public class ChatGpt
     private readonly string historyFileName;
     private readonly JArray messages;
 
-    private readonly string settings =
-        "Ответь в стиле jarvis к особе мужского пола: ";
 
     public ChatGpt()
     {
@@ -24,7 +22,7 @@ public class ChatGpt
             var settingsMessage = new JObject();
             settingsMessage["role"] = "system";
             messages.Add(settingsMessage);
-            settingsMessage["content"] = settings;
+            settingsMessage["content"] = AnswerSettings.Instance.formatPromt();
             historyFileName = DateTime.Now.ToString("yyyy-MM-ddTHH_mm_ss") + ".json";
         }
         catch (Exception e)
@@ -57,9 +55,9 @@ public class ChatGpt
         var requests = new WebRequests("", httpWebRequest);
         var response = requests.execute(data);
         var content = JObject.Parse(response)["choices"]?[0]?["message"]?["content"]?.ToString();
-        
+
         Trace.WriteLine(content);
-        
+
         messages.Add(JObject.Parse(response)["choices"]?[0]?["message"] ?? throw new InvalidOperationException());
 
         SaveToFile();

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using Newtonsoft.Json.Linq;
 
@@ -19,12 +18,10 @@ public class WebRequests
     public string execute(JObject data)
     {
         if (data != null)
-        {
             using (var requestStream = new StreamWriter(_request.GetRequestStream()))
             {
                 requestStream.Write(data.ToString());
             }
-        }
 
         using (var response = (HttpWebResponse)_request.GetResponse())
         {

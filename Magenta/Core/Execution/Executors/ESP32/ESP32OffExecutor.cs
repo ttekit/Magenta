@@ -10,7 +10,7 @@ public class ESP32OffExecutor : IExecutor
 
     public string Execute()
     {
-        string urlBase = "http://192.168.1.130/";
+        var urlBase = "http://192.168.1.130/";
         Trace.WriteLine("Started turn off");
         Command = Command.Trim();
 
@@ -20,7 +20,7 @@ public class ESP32OffExecutor : IExecutor
             ESP32WordsArray.Instance.UpdateStates();
             if (!ESP32WordsArray.Instance.GetState(Command))
             {
-                int id = ESP32WordsArray.Instance.GetWordId(Command);
+                var id = ESP32WordsArray.Instance.GetWordId(Command);
                 Trace.WriteLine("State: " + ESP32WordsArray.Instance.GetState(Command));
                 Trace.WriteLine("Word is detected");
 

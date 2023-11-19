@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Magenta.Core;
 using Magenta.Core.Audio;
+using Magenta.Core.Web;
 using Microsoft.Win32;
 using NAudio.CoreAudioApi;
 
@@ -26,9 +26,20 @@ public partial class MainWindow : Window
         _audioDevicesInfo = enumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
         AddListeners();
         Config.LoadConfig();
+        AnswerSettings.Instance.LoadSettings();
+        InitTextBoxes();
     }
 
     public static MediaPlayer _mediaPlayer { get; private set; }
+
+    private void InitTextBoxes()
+    {
+        SatiricTextBox.Text = AnswerSettings.Instance.Satiric;
+        BehaviorTextBox.Text = AnswerSettings.Instance.Style;
+        HumorTextBox.Text = AnswerSettings.Instance.Humor;
+        AggerssiveTextBox.Text = AnswerSettings.Instance.Agresive;
+        ToleranceTextBox.Text = AnswerSettings.Instance.Tolerance;
+    }
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
@@ -108,29 +119,39 @@ public partial class MainWindow : Window
     private void SaveChangesButton_OnClick(object sender, RoutedEventArgs e)
     {
         Config.SaveConfig();
+        UpdateAnswerSettings();
         System.Windows.Forms.Application.Restart();
+        Application.Current.Shutdown();
+    }
+
+    private void UpdateAnswerSettings()
+    {
+        var satiric = SatiricTextBox.Text;
+        var behavior = BehaviorTextBox.Text;
+        var humor = HumorTextBox.Text;
+        var agressive = AggerssiveTextBox.Text;
+        var tolerance = ToleranceTextBox.Text;
+
+        AnswerSettings.Instance.UpdateData(behavior, satiric, humor, agressive, tolerance);
+        AnswerSettings.Instance.SaveToFile();
     }
 
     private void StartRecordingSoundButton_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenFileDialog openFileDialog = new OpenFileDialog();
+        var openFileDialog = new OpenFileDialog();
         openFileDialog.Filter = "Audio Fiels (*.mp3;*.wav)";
 
         if (openFileDialog.ShowDialog() == true)
-        {
             File.Copy(openFileDialog.FileName, Config.Instance.RECORD_START_SOUND_URI, true);
-        }
     }
 
     private void EndRecordingSoundButton_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenFileDialog openFileDialog = new OpenFileDialog();
+        var openFileDialog = new OpenFileDialog();
         openFileDialog.Filter = "Audio Fiels (*.mp3;*.wav)";
 
         if (openFileDialog.ShowDialog() == true)
-        {
             File.Copy(openFileDialog.FileName, Config.Instance.RECORD_END_SOUND_URI, true);
-        }
     }
 
     private void HistoryListView_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)

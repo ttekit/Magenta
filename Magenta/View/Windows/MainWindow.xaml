@@ -54,25 +54,21 @@
             <Button x:Name="EndRecordingSoundButton" Click="EndRecordingSoundButton_OnClick">End Recording Sound</Button>
 
         </WrapPanel>
-        <WrapPanel HorizontalAlignment="Center" Orientation="Vertical" Grid.RowSpan="4" Grid.Row="1" Grid.Column="1">
-
-        </WrapPanel>
-        <WrapPanel  Grid.RowSpan="4" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" Orientation="Vertical">
+        <WrapPanel HorizontalAlignment="Center" Orientation="Vertical" Grid.RowSpan="4" Grid.Row="1" Grid.Column="1" />
+        <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" Orientation="Vertical">
             <Label>Satiric %</Label>
-            <TextBox Width="300" x:Name="sadf">100</TextBox>
+            <TextBox Width="300" x:Name="SatiricTextBox">100</TextBox>
             <Label>Behavior</Label>
-            <TextBox x:Name="fdas">в стиле jarvis</TextBox>
-            <Label>Jokes %</Label>
-            <TextBox x:Name="sdfg">50</TextBox>
+            <TextBox x:Name="BehaviorTextBox">в стиле jarvis</TextBox>
+            <Label>Humor %</Label>
+            <TextBox x:Name="HumorTextBox">50</TextBox>
             <Label>Agressive %</Label>
-            <TextBox x:Name="xcb">5</TextBox>
+            <TextBox x:Name="AggerssiveTextBox">5</TextBox>
             <Label>Tolerance %</Label>
-            <TextBox x:Name="jlkl">0</TextBox>
+            <TextBox x:Name="ToleranceTextBox">0</TextBox>
         </WrapPanel>
         <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="3">
-            <ListView x:Name="HistoryListView" MouseDoubleClick="HistoryListView_OnMouseDoubleClick">
-
-            </ListView>
+            <ListView x:Name="HistoryListView" MouseDoubleClick="HistoryListView_OnMouseDoubleClick" />
         </WrapPanel>
         <WrapPanel Grid.ColumnSpan="4" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center"
                    HorizontalAlignment="Center">

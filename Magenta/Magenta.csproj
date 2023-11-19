@@ -24,15 +24,19 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Deepgram" Version="3.2.0" />
-        <PackageReference Include="Google.Cloud.Speech.V1" Version="3.4.0" />
-        <PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="3.2.0" />
-        <PackageReference Include="NAudio" Version="2.2.1" />
-        <PackageReference Include="NAudio.Lame" Version="2.1.0" />
-        <PackageReference Include="Porcupine" Version="2.2.3" />
-        <PackageReference Include="PvRecorder" Version="1.2.4" />
-        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
-        <PackageReference Include="System.Speech" Version="7.0.0" />
+        <PackageReference Include="Deepgram" Version="3.2.0"/>
+        <PackageReference Include="Google.Cloud.Speech.V1" Version="3.4.0"/>
+        <PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="3.2.0"/>
+        <PackageReference Include="NAudio" Version="2.2.1"/>
+        <PackageReference Include="NAudio.Lame" Version="2.1.0"/>
+        <PackageReference Include="Porcupine" Version="2.2.3"/>
+        <PackageReference Include="PvRecorder" Version="1.2.4"/>
+        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118"/>
+        <PackageReference Include="System.Speech" Version="7.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Core\Execution\Executors\ESP32\WordsArray\"/>
     </ItemGroup>
 
 </Project>
