@@ -1,12 +1,15 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Magenta.Core;
 using Magenta.Core.Audio;
+using Magenta.Core.Execution.Executors;
 using Magenta.Core.Web;
+using Magenta.View.Windows;
 using Microsoft.Win32;
 using NAudio.CoreAudioApi;
 
@@ -28,9 +31,22 @@ public partial class MainWindow : Window
         Config.LoadConfig();
         AnswerSettings.Instance.LoadSettings();
         InitTextBoxes();
+        InitHistoryView();
+        InitEspListBox();
     }
 
     public static MediaPlayer _mediaPlayer { get; private set; }
+
+    private void InitEspListBox()
+    {
+        ESPListView.ItemsSource = ESP32WordsArray.Instance.GetArray();
+    }
+
+    private void InitHistoryView()
+    {
+        var files = Directory.GetFiles(Config.Instance.HISTORY_DIR);
+        HistoryListView.ItemsSource = files;
+    }
 
     private void InitTextBoxes()
     {
@@ -61,8 +77,11 @@ public partial class MainWindow : Window
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    _mediaPlayer.Open(new Uri(Config.Instance.RECORD_START_SOUND_URI));
-                    _mediaPlayer.Play();
+                    if (_mainApplication.IsWorkingEnded)
+                    {
+                        _mediaPlayer.Open(new Uri(Config.Instance.RECORD_START_SOUND_URI));
+                        _mediaPlayer.Play();
+                    }
                 });
             });
         };
@@ -120,6 +139,8 @@ public partial class MainWindow : Window
     {
         Config.SaveConfig();
         UpdateAnswerSettings();
+        ESP32WordsArray.Instance.SaveToFile();
+
         System.Windows.Forms.Application.Restart();
         Application.Current.Shutdown();
     }
@@ -127,12 +148,12 @@ public partial class MainWindow : Window
     private void UpdateAnswerSettings()
     {
         var satiric = SatiricTextBox.Text;
-        var behavior = BehaviorTextBox.Text;
+        var style = BehaviorTextBox.Text;
         var humor = HumorTextBox.Text;
         var agressive = AggerssiveTextBox.Text;
         var tolerance = ToleranceTextBox.Text;
 
-        AnswerSettings.Instance.UpdateData(behavior, satiric, humor, agressive, tolerance);
+        AnswerSettings.Instance.UpdateData(style, satiric, humor, agressive, tolerance);
         AnswerSettings.Instance.SaveToFile();
     }
 
@@ -156,6 +177,32 @@ public partial class MainWindow : Window
 
     private void HistoryListView_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        //TODO
+        var selectedHistory = HistoryListView.SelectedItem.ToString();
+        _mainApplication.Gpt.SetHistory(selectedHistory);
+        MessageBox.Show("История обновлена");
+    }
+
+    private void ViewHistoryButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        var view = new HistoryView(_mainApplication.Gpt.GetHistory());
+        view.ShowDialog();
+    }
+
+    private void ESPAddButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        var addEspDivice = new AddEspDivice();
+        addEspDivice.ShowDialog();
+    }
+
+    private void ESPListView_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        var selectedItem = (EspItem)ESPListView.SelectedItem;
+        var editEspDivice = new EditEspDivice(selectedItem);
+        editEspDivice.ShowDialog();
+    }
+
+    private void MainWindow_OnClosed(object? sender, EventArgs e)
+    {
+        Thread.CurrentThread.Abort();
     }
 }

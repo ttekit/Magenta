@@ -1,71 +1,83 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Magenta.Core.Execution.Executors;
 
 namespace Magenta.Core.Execution.DataBase;
 
 public class WordsArray
 {
-    private readonly List<bool> state;
-    private readonly List<string> words;
+    private List<EspItem> data;
 
     public WordsArray()
     {
-        words = new List<string>();
-        state = new List<bool>();
+        data = new List<EspItem>();
     }
 
-    public void AddWord(string word)
+
+    public List<EspItem> Data
     {
-        words.Add(word);
-        state.Add(false);
+        get => data;
+        private set => data = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    public int GetWordIndex(string word)
+    public void AddWord(EspItem word)
     {
-        for (var i = 0; i < words.Count; i++)
-            if (word.Contains(words[i]))
-                return i;
-
-        return -1;
+        data.Add(word);
     }
+
 
     public bool Contains(string word)
     {
-        foreach (var s in words)
-            if (word.Contains(s))
+        foreach (var s in data)
+            if (s.ContainsWord(word))
                 return true;
 
         return false;
     }
 
-    public List<string> GetWords()
+    public void SetState(EspItem word, bool state)
     {
-        return words;
+        if (data.Contains(word))
+            word.State = state;
     }
 
-    public void SetState(int id, bool state)
+    public EspItem GetEspItemByName(string name)
     {
-        if (id < this.state.Count)
-            this.state[id] = state;
-        else
-            this.state.Add(state);
+        foreach (var item in data)
+            if (name.Contains(item.Name))
+                return item;
+
+        return null;
     }
 
-    public bool GetState(int id)
+    public void SetState(string name, bool state)
     {
-        return state[id];
+        var item = GetEspItemByName(name);
+        if (item == null) return;
+        item.State = state;
     }
 
-    public bool GetState(string word)
+    public bool GetState(string name)
     {
-        for (var i = 0; i < words.Count; i++)
-            if (words[i].Contains(word))
-                return state[i];
-
-        return false;
+        var item = GetEspItemByName(name);
+        if (item == null) return false;
+        return item.State;
     }
 
-    public string GetAbbr(int id)
+    public IEnumerable<EspItem> GetArray()
     {
-        return words[id];
+        return data;
+    }
+
+    public void UpdateItem(EspItem item)
+    {
+        for (var i = 0; i < data.Count; i++)
+            if (data[i].Name.Contains(item.Name))
+            {
+                data[i] = item;
+                return;
+            }
+
+        data.Add(item);
     }
 }

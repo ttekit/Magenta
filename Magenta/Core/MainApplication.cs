@@ -8,9 +8,6 @@ namespace Magenta.Core;
 
 public class MainApplication
 {
-    private bool _isWorkingEnded;
-
-
     public MainApplication()
     {
         WakeWordDetector = new WakeWordDetector();
@@ -23,8 +20,10 @@ public class MainApplication
         Gpt.resultsObtained += GptOnresultsObtained;
         MainWindow._mediaPlayer.MediaEnded += MediaPlayerOnMediaEnded;
 
-        Speech.Recorder.recordStarted += () => _isWorkingEnded = false;
+        Speech.Recorder.recordStarted += () => IsWorkingEnded = false;
     }
+
+    public bool IsWorkingEnded { get; private set; } = true;
 
     public WakeWordDetector WakeWordDetector { get; }
 
@@ -36,12 +35,12 @@ public class MainApplication
 
     private void DubberOnAnnounceEnded()
     {
-        _isWorkingEnded = true;
+        IsWorkingEnded = true;
     }
 
     private void MediaPlayerOnMediaEnded(object? sender, EventArgs e)
     {
-        if (_isWorkingEnded)
+        if (IsWorkingEnded)
         {
             Trace.WriteLine("CHAIN APPL STARTED");
             StartChain();
@@ -50,7 +49,7 @@ public class MainApplication
 
     private void StartChain()
     {
-        if (_isWorkingEnded) Speech.Record();
+        if (IsWorkingEnded) Speech.Record();
     }
 
     private void GptOnresultsObtained()
@@ -85,6 +84,6 @@ public class MainApplication
 
     private void MagentaDetected()
     {
-        Speech.Record();
+        if (!IsWorkingEnded) Speech.Record();
     }
 }

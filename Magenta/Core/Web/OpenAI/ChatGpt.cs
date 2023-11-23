@@ -9,9 +9,9 @@ namespace Magenta.Core.Web;
 public class ChatGpt
 {
     private readonly string apiKey;
-    private readonly string historyFileName;
-    private readonly JArray messages;
 
+    private string historyFileName;
+    private JArray messages;
 
     public ChatGpt()
     {
@@ -86,6 +86,17 @@ public class ChatGpt
         {
             throw new Exception(e.Message);
         }
+    }
+
+    public void SetHistory(string selectedHistory)
+    {
+        historyFileName = selectedHistory;
+        messages = JArray.Parse(File.ReadAllText(historyFileName));
+    }
+
+    public JArray GetHistory()
+    {
+        return messages;
     }
 }
 

@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="M.A.G.E.N.T.A" Height="900" Width="1600"
-        Loaded="MainWindow_OnLoaded">
+        Loaded="MainWindow_OnLoaded"
+        ShowInTaskbar="True"
+        Closed="MainWindow_OnClosed">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -54,7 +56,10 @@
             <Button x:Name="EndRecordingSoundButton" Click="EndRecordingSoundButton_OnClick">End Recording Sound</Button>
 
         </WrapPanel>
-        <WrapPanel HorizontalAlignment="Center" Orientation="Vertical" Grid.RowSpan="4" Grid.Row="1" Grid.Column="1" />
+        <WrapPanel HorizontalAlignment="Center" Orientation="Vertical" Grid.RowSpan="4" Grid.Row="1" Grid.Column="1">
+            <Button x:Name="ESPAddButton" Click="ESPAddButton_OnClick">Add new link</Button>
+            <ListView x:Name="ESPListView" MouseDoubleClick="ESPListView_OnMouseDoubleClick" Height="400" />
+        </WrapPanel>
         <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" Orientation="Vertical">
             <Label>Satiric %</Label>
             <TextBox Width="300" x:Name="SatiricTextBox">100</TextBox>
@@ -67,8 +72,9 @@
             <Label>Tolerance %</Label>
             <TextBox x:Name="ToleranceTextBox">0</TextBox>
         </WrapPanel>
-        <WrapPanel Grid.RowSpan="4" Grid.Row="1" Grid.Column="3">
-            <ListView x:Name="HistoryListView" MouseDoubleClick="HistoryListView_OnMouseDoubleClick" />
+        <WrapPanel HorizontalAlignment="Center" Orientation="Vertical" Grid.RowSpan="4" Grid.Row="1" Grid.Column="3">
+            <Button x:Name="ViewHistoryButton" Click="ViewHistoryButton_OnClick">View Histroy</Button>
+            <ListView x:Name="HistoryListView" MouseDoubleClick="HistoryListView_OnMouseDoubleClick" Height="500" />
         </WrapPanel>
         <WrapPanel Grid.ColumnSpan="4" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center"
                    HorizontalAlignment="Center">

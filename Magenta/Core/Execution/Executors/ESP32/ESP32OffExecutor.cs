@@ -10,33 +10,26 @@ public class ESP32OffExecutor : IExecutor
 
     public string Execute()
     {
-        var urlBase = "http://192.168.1.130/";
         Trace.WriteLine("Started turn off");
         Command = Command.Trim();
 
-        if (ESP32WordsArray.Instance.Contains(Command))
+        var item = ESP32WordsArray.Instance.GetEspItem(Command);
+        if (item == null) return "Не вышло выключить устройство";
+
+        item.UpdateState();
+        Trace.WriteLine("State 1: " + item.State);
+        if (item.State)
         {
             Trace.WriteLine(Command);
-            ESP32WordsArray.Instance.UpdateStates();
-            if (!ESP32WordsArray.Instance.GetState(Command))
-            {
-                var id = ESP32WordsArray.Instance.GetWordId(Command);
-                Trace.WriteLine("State: " + ESP32WordsArray.Instance.GetState(Command));
-                Trace.WriteLine("Word is detected");
 
-                urlBase += ESP32WordsArray.Instance.GetIdAbbr(Command);
-                urlBase += "/H";
-
-                sendRequest(urlBase);
-
-                ESP32WordsArray.Instance.SetState(id, true);
-                return "Устройство успешно выключено";
-            }
-
-            return "Не вышло выключить устройство, оно уже было выключено";
+            Trace.WriteLine("State: " + ESP32WordsArray.Instance.GetState(Command));
+            Trace.WriteLine("Word is detected");
+            sendRequest(item.Offlink);
+            item.State = true;
+            return "Устройство успешно выключено";
         }
 
-        return "Не вышло выключить устройство";
+        return "устройство уже было выключено";
     }
 
     private void sendRequest(string q)

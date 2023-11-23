@@ -1,0 +1,41 @@
+﻿<Window x:Class="Magenta.View.Windows.EditEspDivice"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        mc:Ignorable="d"
+        Title="EditEspDivice" Height="450" Width="800">
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="Button">
+                <Setter Property="FontFamily" Value="Verdana" />
+                <Setter Property="Background" Value="Black" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="Width" Value="300" />
+                <Setter Property="FontSize" Value="25" />
+                <Setter Property="Height" Value="75" />
+            </Style>
+            <Style TargetType="Label">
+                <Setter Property="FontSize" Value="25" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="FontSize" Value="25" />
+            </Style>
+        </Grid.Resources>
+        <WrapPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label>Name</Label>
+            <TextBox x:Name="NameTextBox" />
+            <Label>On Link</Label>
+            <TextBox x:Name="OnLinkTextBox" />
+            <Label>Off Link</Label>
+            <TextBox x:Name="OffLinkTextBox" />
+            <Label>State Link</Label>
+            <TextBox x:Name="StateLinkTextBox" />
+            <Button x:Name="SaveButton" Click="SaveButton_OnClick">Save</Button>
+        </WrapPanel>
+
+    </Grid>
+</Window>

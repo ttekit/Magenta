@@ -24,6 +24,7 @@ public class Config
     [JsonIgnore] public string RECORD_START_SOUND_URI => AUDIO_DIR + "bipStart.mp3";
     [JsonIgnore] public string RECORD_END_SOUND_URI => AUDIO_DIR + "bipEnd.mp3";
     [JsonIgnore] public string ANSWER_SETTINGS_PATH => ROOT_PATH + "answerSettings.json";
+    [JsonIgnore] public string ESP_WORDS_ARRAY_PATH => ROOT_PATH + "espWordsArray.json";
 
     public static Config Instance
     {

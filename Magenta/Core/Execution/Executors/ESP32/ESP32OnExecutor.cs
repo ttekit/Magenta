@@ -10,33 +10,26 @@ public class ESP32OnExecutor : IExecutor
 
     public string Execute()
     {
-        var urlBase = "http://192.168.1.130/";
         Trace.WriteLine("Started turn on");
         Command = Command.Trim();
 
-        if (ESP32WordsArray.Instance.Contains(Command))
+        var item = ESP32WordsArray.Instance.GetEspItem(Command);
+        if (item == null) return "Не вышло включить устройство";
+
+        item.UpdateState();
+        Trace.WriteLine("State 1: " + item.State);
+        if (!item.State)
         {
             Trace.WriteLine(Command);
-            ESP32WordsArray.Instance.UpdateStates();
-            if (ESP32WordsArray.Instance.GetState(Command))
-            {
-                var id = ESP32WordsArray.Instance.GetWordId(Command);
-                Trace.WriteLine("State: " + ESP32WordsArray.Instance.GetState(Command));
-                Trace.WriteLine("Word is detected");
 
-                urlBase += ESP32WordsArray.Instance.GetIdAbbr(Command);
-                urlBase += "/L";
-
-                sendRequest(urlBase);
-
-                ESP32WordsArray.Instance.SetState(id, true);
-                return "Устройство успешно включено";
-            }
-
-            return "Не вышло включить устройство, оно уже было включено";
+            Trace.WriteLine("State: " + ESP32WordsArray.Instance.GetState(Command));
+            Trace.WriteLine("Word is detected");
+            sendRequest(item.Onlink);
+            item.State = true;
+            return "Устройство успешно включено";
         }
 
-        return "Не вышло включить устройство";
+        return "устройство уже было включено";
     }
 
     private void sendRequest(string q)

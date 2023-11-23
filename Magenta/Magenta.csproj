@@ -35,8 +35,4 @@
         <PackageReference Include="System.Speech" Version="7.0.0"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Core\Execution\Executors\ESP32\WordsArray\"/>
-    </ItemGroup>
-
 </Project>

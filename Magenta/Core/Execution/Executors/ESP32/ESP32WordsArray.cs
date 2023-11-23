@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Threading;
 using Magenta.Core.Execution.DataBase;
 using Newtonsoft.Json;
 
@@ -13,15 +11,13 @@ public class ESP32WordsArray
     private const int MaxRetries = 3;
     private const int DelayBetweenRetriesMs = 500;
     public static ESP32WordsArray _instance;
-    private readonly WordsArray words;
+    private WordsArray words;
 
     private ESP32WordsArray()
     {
-        words = new WordsArray();
-        words.AddWord("чайник");
-        words.AddWord("свет");
-        words.AddWord("камин");
-        GetStateArray();
+        LoadFromFile();
+        if (words != null) return;
+        // к - еративность
     }
 
     public static ESP32WordsArray Instance
@@ -34,40 +30,28 @@ public class ESP32WordsArray
         private set => _instance = value ?? throw new ArgumentNullException(nameof(value));
     }
 
+    public void LoadFromFile()
+    {
+        if (!File.Exists(Config.Instance.ESP_WORDS_ARRAY_PATH)) return;
+
+        var jsonString = File.ReadAllText(Config.Instance.ESP_WORDS_ARRAY_PATH);
+        words = JsonConvert.DeserializeObject<WordsArray>(jsonString);
+    }
+
+    public void SaveToFile()
+    {
+        var jsonString = JsonConvert.SerializeObject(words);
+        File.WriteAllText(Config.Instance.ESP_WORDS_ARRAY_PATH, jsonString);
+    }
+
+    public void AddItem(EspItem item)
+    {
+        words.AddWord(item);
+    }
+
     public bool Contains(string s)
     {
         return words.Contains(s);
-    }
-
-    public string GetIdAbbr(int id)
-    {
-        return id + 1 switch
-        {
-            1 => "PO",
-            2 => "PT",
-            3 => "PF",
-            4 => "PFR",
-            _ => ""
-        };
-    }
-
-    public string GetIdAbbr(string word)
-    {
-        var id = GetWordId(word);
-        switch (id + 1)
-        {
-            case 1: return "PO";
-            case 2: return "PT";
-            case 3: return "PF";
-            case 4: return "PFR";
-        }
-
-        return "";
-    }
-
-    public int GetWordId(string word)
-    {
-        return words.GetWordIndex(word);
     }
 
     public bool GetState(string name)
@@ -75,48 +59,23 @@ public class ESP32WordsArray
         return words.GetState(name);
     }
 
-    private void GetStateArray()
+    public void SetState(string name, bool b)
     {
-        var retryCount = 0;
-
-        while (retryCount < MaxRetries)
-            try
-            {
-                var request = WebRequest.Create("http://192.168.1.130/pins");
-                request.Method = "GET";
-                var data = "";
-                using (var response = request.GetResponse())
-                {
-                    using (var stream = response.GetResponseStream())
-                    {
-                        data = new StreamReader(stream).ReadToEnd();
-                    }
-                }
-
-                if (data != "")
-                {
-                    var
-                        jsonArray = JsonConvert.DeserializeObject<List<Dictionary<string, int>>>(data);
-                    for (var i = 0; i < jsonArray.Count; i++)
-                        words.SetState(i, jsonArray[i]["state"].ToString() == "1");
-                }
-
-                return;
-            }
-            catch (Exception e)
-            {
-                retryCount++;
-                Thread.Sleep(DelayBetweenRetriesMs);
-            }
+        words.SetState(name, b);
     }
 
-    public void SetState(int id, bool b)
+    public EspItem GetEspItem(string command)
     {
-        words.SetState(id, b);
+        return words.GetEspItemByName(command);
     }
 
-    public void UpdateStates()
+    public IEnumerable<EspItem> GetArray()
     {
-        GetStateArray();
+        return words.GetArray();
+    }
+
+    public void UpdateItem(EspItem item)
+    {
+        words.UpdateItem(item);
     }
 }
