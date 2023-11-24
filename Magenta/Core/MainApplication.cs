@@ -3,11 +3,13 @@ using System.Diagnostics;
 using Magenta.Core.Audio;
 using Magenta.Core.Execution;
 using Magenta.Core.Web;
+using Magenta.View.Windows;
 
 namespace Magenta.Core;
 
 public class MainApplication
 {
+
     public MainApplication()
     {
         WakeWordDetector = new WakeWordDetector();
@@ -19,7 +21,6 @@ public class MainApplication
         Speech.Dubber.AnnounceEnded += DubberOnAnnounceEnded;
         Gpt.resultsObtained += GptOnresultsObtained;
         MainWindow._mediaPlayer.MediaEnded += MediaPlayerOnMediaEnded;
-
         Speech.Recorder.recordStarted += () => IsWorkingEnded = false;
     }
 

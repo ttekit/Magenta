@@ -1,5 +1,8 @@
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows;
+using Magenta.View.Windows;
 using NAudio.Lame;
 using NAudio.Wave;
 
@@ -18,11 +21,18 @@ public class AudioRecorder
     private Stopwatch stopTimer;
     private WaveFileWriter waveFileWriter;
     private WaveInEvent waveSource;
+    private readonly WorkingVoicePage _voicePage;
+
     public bool isEnded { get; private set; }
 
     public event RecordStartedEvent recordStarted;
     public event RecordEndedEvent recordEnded;
     public event RecordEndStartedEvent recordEndStarted;
+
+    public AudioRecorder()
+    {
+        _voicePage = new WorkingVoicePage();
+    }
 
     public void StartRecording()
     {
@@ -32,6 +42,7 @@ public class AudioRecorder
         stopTimer = new Stopwatch();
         waveSource = new WaveInEvent();
         // waveSource.DeviceNumber = Config.Instance.AudioDeviceIndex;
+        _voicePage.Show();
 
         waveSource.WaveFormat =
             new WaveFormat(Config.Instance.SampleRate, Config.Instance.Channels);
@@ -77,6 +88,7 @@ public class AudioRecorder
                 if (silenceTimer.ElapsedMilliseconds >= Config.Instance.SilenceDurationMs)
                 {
                     silenceTimer.Stop();
+                    Application.Current.Dispatcher.Invoke(() => { _voicePage.Close(); });
                     Trace.WriteLine("Silence Detected");
                     StopRecording();
                 }
@@ -131,6 +143,11 @@ public class AudioRecorder
         }
 
         var rms = (float)Math.Sqrt(sumOfSquares / (bytesRead / 2));
+        Task.Run(() =>
+        {
+            Application.Current.Dispatcher.Invoke(() => { _voicePage.SetSize((int)Math.Round(rms * 50)); });
+        });
+
 
         return rms;
     }
